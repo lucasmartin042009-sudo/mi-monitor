@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Soleil de luminosité au centre de l'écran -->
+  <g fill="#0A5BD8" stroke="#0A5BD8" stroke-linecap="round" stroke-width="30">
+    <circle cx="512" cy="456" r="78" stroke="none"/>
+    <line x1="512" y1="318" x2="512" y2="344"/>
+    <line x1="512" y1="568" x2="512" y2="594"/>
+    <line x1="374" y1="456" x2="400" y2="456"/>
+    <line x1="624" y1="456" x2="650" y2="456"/>
+    <line x1="414" y1="358" x2="432" y2="376"/>
+    <line x1="592" y1="536" x2="610" y2="554"/>
+    <line x1="414" y1="554" x2="432" y2="536"/>
+    <line x1="592" y1="376" x2="610" y2="358"/>
+  </g>
+</svg>

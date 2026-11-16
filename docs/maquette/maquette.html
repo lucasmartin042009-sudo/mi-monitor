@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mi Monitor · Maquette</title>
+<meta name="viewport" content="width=1800">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#e8e8ed}
+body{width:1800px;font-family:system-ui;font-size:13px;color:#1d1d1f;-webkit-font-smoothing:antialiased;letter-spacing:-.08px}
+svg.ic{display:block;flex:none}
+
+/* ---------- planches ---------- */
+.planche{padding:22px 48px 22px}
+.planche+.planche{border-top:1px solid #d4d4da}
+.ptop{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.pnum{width:30px;height:30px;border-radius:15px;background:#1d1d1f;color:#fff;font-size:15px;font-weight:700;display:grid;place-items:center;flex:none}
+.ptop h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.ptop .app{font-size:12px;font-weight:600;color:#fff;background:#007AFF;border-radius:20px;padding:3px 10px}
+.ptop .pg{margin-left:auto;font-size:12px;color:#86868b;font-variant-numeric:tabular-nums}
+.psubt{font-size:13px;color:#6e6e73;margin:0 0 12px 44px;max-width:1240px;line-height:1.45}
+.row{display:flex;gap:24px}
+.row+.row{margin-top:16px}
+.cell{flex:none;display:flex;flex-direction:column;gap:9px;min-width:0}
+.cap{width:0;min-width:100%;font-size:12px;color:#6e6e73;line-height:1.45;padding:0 4px}
+.cap b{color:#1d1d1f;font-weight:600}
+.cap .n{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:9px;background:#1d1d1f;color:#fff;font-size:10px;font-weight:700;margin-right:6px;vertical-align:1px}
+
+/* ---------- thèmes ---------- */
+.light{
+  --text:#1d1d1f;--text2:rgba(60,60,67,.66);--text3:rgba(60,60,67,.40);
+  --accent:#007AFF;--onaccent:#fff;
+  --glass:rgba(246,246,250,.58);--glass-brd:rgba(255,255,255,.72);--glass-sh:0 22px 60px rgba(20,20,60,.22),0 0 0 .5px rgba(0,0,0,.10);
+  --mod:rgba(255,255,255,.55);--mod-brd:rgba(255,255,255,.6);
+  --track:rgba(0,0,0,.085);--fill:#fff;--sl-ic:#6e6e73;--hatch:rgba(0,122,255,.20);
+  --chip:rgba(0,0,0,.065);--chip2:rgba(0,0,0,.04);
+  --sep:rgba(0,0,0,.09);
+  --orange:#FF9500;--green:#34C759;--red:#FF3B30;--indigo:#5856D6;
+  --win:#fbfbfd;--group:rgba(0,0,0,.035);--side:rgba(236,236,242,.8);--field:#fff;--field-brd:rgba(0,0,0,.13);--segon:#fff;
+  --menubar:rgba(255,255,255,.40);--menubar-t:#1d1d1f;
+  --wall:radial-gradient(ellipse at 12% 18%,#ffcf9f 0,transparent 46%),radial-gradient(ellipse at 88% 6%,#9cc2ff 0,transparent 52%),radial-gradient(ellipse at 74% 86%,#f7a3c4 0,transparent 50%),radial-gradient(ellipse at 18% 92%,#93e2d2 0,transparent 46%),radial-gradient(ellipse at 50% 50%,#d9d0ff 0,transparent 60%),#ece6f6;
+  color:var(--text);
+}
+.dark{
+  --text:#f5f5f7;--text2:rgba(235,235,245,.66);--text3:rgba(235,235,245,.36);
+  --accent:#0A84FF;--onaccent:#fff;
+  --glass:rgba(30,30,36,.55);--glass-brd:rgba(255,255,255,.14);--glass-sh:0 22px 60px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.6);
+  --mod:rgba(255,255,255,.08);--mod-brd:rgba(255,255,255,.07);
+  --track:rgba(255,255,255,.14);--fill:rgba(255,255,255,.95);--sl-ic:#8e8e93;--hatch:rgba(10,132,255,.42);
+  --chip:rgba(255,255,255,.11);--chip2:rgba(255,255,255,.065);
+  --sep:rgba(255,255,255,.10);
+  --orange:#FF9F0A;--green:#30D158;--red:#FF453A;--indigo:#5E5CE6;
+  --win:#1f1f22;--group:rgba(255,255,255,.05);--side:rgba(50,50,56,.66);--field:rgba(255,255,255,.08);--field-brd:rgba(255,255,255,.13);--segon:rgba(255,255,255,.24);
+  --menubar:rgba(0,0,0,.28);--menubar-t:#f5f5f7;
+  --wall:radial-gradient(ellipse at 14% 20%,#6a2fa0 0,transparent 46%),radial-gradient(ellipse at 86% 8%,#1d4f9e 0,transparent 52%),radial-gradient(ellipse at 76% 88%,#a3285e 0,transparent 48%),radial-gradient(ellipse at 16% 92%,#0d6b6b 0,transparent 46%),#111428;
+  color:var(--text);
+}
+
+/* ---------- cadres bureau ---------- */
+.frame{position:relative;border-radius:18px;overflow:hidden;background:var(--wall);box-shadow:0 1px 2px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.08)}
+.menubar{position:absolute;left:0;right:0;top:0;height:30px;background:var(--menubar);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);display:flex;align-items:center;padding:0 14px;gap:18px;color:var(--menubar-t);font-size:13px;z-index:2}
+.menubar .appn{font-weight:700}
+.menubar .sp{flex:1}
+.menubar .mi{display:flex;align-items:center;height:22px;padding:0 6px;border-radius:6px}
+.menubar .mi.on{background:rgba(127,127,127,.30)}
+.menubar .clock{font-variant-numeric:tabular-nums;white-space:nowrap}
+.frame.narrow .menubar .opt{display:none}
+.tok{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);border-radius:6px;padding:1px 6px;font-weight:500}
+.tag{position:absolute;font-size:11px;font-weight:600;color:var(--text);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:.5px solid var(--glass-brd);border-radius:10px;padding:3px 9px;white-space:nowrap}
+
+/* ---------- panneau ---------- */
+.panel{position:absolute;width:340px;border-radius:24px;padding:12px;background:var(--glass);backdrop-filter:blur(44px) saturate(190%);-webkit-backdrop-filter:blur(44px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh),inset 0 1px 0 rgba(255,255,255,.25);display:flex;flex-direction:column;gap:10px}
+.phead{display:flex;align-items:center;gap:10px;padding:2px 4px 0}
+.badge{width:34px;height:34px;border-radius:17px;display:grid;place-items:center;flex:none;color:#fff}
+.badge.acc{background:var(--accent)}
+.badge.gray{background:var(--chip);color:var(--text)}
+.badge.org{background:var(--orange)}
+.badge.ind{background:var(--indigo)}
+.badge.grn{background:var(--green)}
+.phead .t{flex:1;min-width:0}
+.ptitle{font-size:15px;font-weight:650;letter-spacing:-.2px}
+.psub{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px;margin-top:1px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:4px;flex:none}
+.dot.ok{background:var(--green)}.dot.warn{background:var(--orange)}.dot.off{background:var(--text3)}
+.mod{background:var(--mod);border-radius:16px;padding:10px 12px 12px;border:.5px solid var(--mod-brd)}
+.mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;min-height:16px}
+.mtitle{font-size:13px;font-weight:600}
+.mval{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.mval.acc{color:var(--accent);font-weight:500}
+.link{font-size:12px;color:var(--accent);font-weight:500;display:flex;align-items:center;gap:3px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.stack .mhead{margin-bottom:7px}
+
+/* curseur Centre de contrôle */
+.ccs{position:relative;height:28px;border-radius:14px;background:var(--track);overflow:hidden;flex:1}
+.ccs .f{position:absolute;left:0;top:0;bottom:0;background:var(--fill);border-radius:14px;box-shadow:0 0 0 .5px rgba(0,0,0,.06),2px 0 6px rgba(0,0,0,.10)}
+.ccs .f.hatch{background:repeating-linear-gradient(-45deg,var(--fill) 0 5px,var(--hatch) 5px 9px),var(--fill)}
+.ccs .i{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--sl-ic)}
+.ccs.sm{height:20px;border-radius:10px}
+.ccs.sm .f{border-radius:10px}
+.ccs.sm .i{left:8px;font-size:10px;font-weight:700;color:#fff;line-height:1}
+.srow{display:flex;align-items:center;gap:8px}
+.mute{width:28px;height:28px;border-radius:14px;background:var(--track);display:grid;place-items:center;color:var(--text);flex:none}
+.spin{width:12px;height:12px;border-radius:6px;border:1.6px solid var(--text3);border-top-color:var(--accent);flex:none}
+
+/* profils */
+.prof{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.pf{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pf .c{width:40px;height:40px;border-radius:20px;background:var(--chip);display:grid;place-items:center;color:var(--text)}
+.pf.on .c{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(0,122,255,.35)}
+.pf .l{font-size:11px;line-height:1.2;color:var(--text);font-weight:500}
+.pf.on .l{font-weight:650}
+.psum{margin-top:10px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);padding:5px 9px;border-radius:9px;background:var(--chip2);white-space:nowrap}
+.psum b{color:var(--text);font-weight:600}
+.psum .ok{color:var(--accent)}
+
+/* rangées dépliables */
+.rows{padding:3px 0}
+.drow{display:flex;align-items:center;gap:10px;padding:7px 12px;min-height:46px;position:relative}
+.drow.top::before{content:"";position:absolute;left:50px;right:12px;top:0;border-top:.5px solid var(--sep)}
+.drow .badge{width:28px;height:28px;border-radius:14px}
+.drow .dt{flex:1;min-width:0}
+.dt .a{font-size:13px;font-weight:600}
+.dt .b{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap}
+.drow .dv{font-size:12px;color:var(--text2);white-space:nowrap}
+.drow .chev{color:var(--text3)}
+.drow .chev.open{transform:rotate(90deg)}
+.dexp{padding:0 12px 12px}
+.dnote{font-size:11px;color:var(--text2);line-height:1.35;padding:8px 2px 0}
+
+/* préréglages couleur */
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sg{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 7px;border-radius:12px;background:var(--chip2);color:var(--text);white-space:nowrap}
+.sg .k{font-size:11px;font-weight:600;margin-top:2px}
+.sg .s{font-size:10px;color:var(--text2)}
+.sg.on{background:var(--accent);color:#fff}
+.sg.on .s{color:rgba(255,255,255,.86)}
+.sw{width:18px;height:18px;border-radius:9px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2)}
+.sg.on .sw{box-shadow:0 0 0 2px var(--accent),0 0 0 3.5px #fff}
+.gain{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.gain .grow{display:flex;align-items:center;gap:8px}
+.gain .gv{width:24px;text-align:right;font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums}
+
+/* source */
+.src{display:flex;flex-direction:column;gap:2px}
+.so{display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:10px;min-height:38px}
+.so .nm{font-size:13px;flex:1}
+.so .ds{font-size:11px;color:var(--text2)}
+.so.hov{background:var(--chip)}
+.so.sel{background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.so .ck{color:var(--accent)}
+.so .si{width:26px;height:26px;border-radius:13px;background:var(--chip);display:grid;place-items:center}
+.so.act .si{background:var(--accent);color:#fff}
+.iconf{margin-top:8px;border-radius:12px;background:var(--mod);border:.5px solid var(--mod-brd);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.iconf .h{display:flex;align-items:center;gap:7px;font-weight:650}
+.iconf p{font-size:11px;color:var(--text2);line-height:1.4}
+.iconf .btns{justify-content:flex-end;margin-top:2px}
+
+/* interrupteur */
+.tog{width:34px;height:20px;border-radius:10px;background:var(--track);position:relative;flex:none}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:8px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tog.on{background:var(--accent)}
+.tog.on::after{left:16px}
+
+/* pied */
+.pfoot{display:flex;flex-direction:column;padding:4px 4px 0;border-top:.5px solid var(--sep)}
+.pfoot .lk{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px}
+.pfoot .lk .k{margin-left:auto;color:var(--text3);font-size:12px}
+
+/* boutons */
+.btns{display:flex;gap:8px}
+.btn{height:26px;border-radius:13px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;background:var(--chip);color:var(--text);white-space:nowrap}
+.btn.pri{background:var(--accent);color:#fff}
+.dis{opacity:.42;filter:saturate(0)}
+
+/* erreur */
+.err{background:var(--mod);border:.5px solid var(--mod-brd);border-radius:16px;padding:13px 14px 12px;display:flex;flex-direction:column;gap:7px}
+.err .h{display:flex;gap:8px;align-items:center;font-weight:650;font-size:13px}
+.err p{font-size:12px;color:var(--text2);line-height:1.4}
+.chk{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border-radius:10px;background:var(--chip2);margin:2px 0}
+.chk div{display:flex;align-items:center;gap:7px;font-size:12px}
+.chk .s{color:var(--text2)}
+.err .meta{font-size:11px;color:var(--text3)}
+.last{font-size:11px;color:var(--text2)}
+
+/* cartes compactes */
+.mini{position:absolute;width:340px;border-radius:20px;padding:10px 12px;background:var(--glass);backdrop-filter:blur(44px) saturate(190%);-webkit-backdrop-filter:blur(44px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh);display:flex;align-items:center;gap:10px}
+.mini .t{flex:1;min-width:0}
+
+/* OSD */
+.osd{position:absolute;left:50%;transform:translateX(-50%);width:384px;height:62px;border-radius:31px;background:var(--glass);backdrop-filter:blur(40px) saturate(190%);-webkit-backdrop-filter:blur(40px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh),inset 0 1px 0 rgba(255,255,255,.22);display:flex;align-items:center;gap:12px;padding:0 20px 0 12px}
+.osd .ob{width:38px;height:38px;border-radius:19px;background:var(--chip);display:grid;place-items:center;flex:none}
+.osd .oc{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0}
+.osd .ot{display:flex;justify-content:space-between;align-items:center}
+.osd .on1{font-size:13px;font-weight:650}
+.osd .on2{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px}
+.notches{display:grid;grid-template-columns:repeat(16,1fr);gap:3px}
+.notches i{height:6px;border-radius:2px;background:var(--track)}
+.notches i.f{background:var(--text)}
+.osd .ov{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;width:44px;text-align:right}
+.ghostwin{position:absolute;border-radius:14px;background:rgba(127,127,127,.12);border:.5px solid rgba(255,255,255,.18)}
+
+/* fenêtres Réglages */
+.win{position:absolute;border-radius:26px;background:var(--win);box-shadow:0 28px 70px rgba(0,0,0,.28),0 0 0 .5px rgba(0,0,0,.2);overflow:hidden;display:flex}
+.side{margin:8px;border-radius:18px;background:var(--side);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:.5px solid var(--glass-brd);padding:14px 10px 10px;display:flex;flex-direction:column;gap:2px;flex:none;width:196px}
+.lights{display:flex;gap:8px;padding:0 4px 16px}
+.lights i{width:12px;height:12px;border-radius:6px;display:block}
+.sitem{display:flex;align-items:center;gap:8px;height:30px;border-radius:9px;padding:0 6px;font-size:13px;white-space:nowrap}
+.sitem.on{background:var(--accent);color:#fff}
+.sq{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:#fff;flex:none}
+.scard{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;background:var(--chip2)}
+.scard .badge{width:28px;height:28px}
+.scard .a{font-size:12px;font-weight:600}
+.content{flex:1;padding:18px 24px 20px 16px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.content>*{flex:none}
+.content h2{font-size:17px;font-weight:700;height:30px;display:flex;align-items:center;padding-left:4px}
+.gh{font-size:11px;font-weight:600;color:var(--text2);padding:0 10px 5px;letter-spacing:.1px}
+.grp{background:var(--group);border-radius:12px;overflow:hidden;border:.5px solid var(--sep)}
+.gr{display:flex;align-items:center;gap:10px;min-height:36px;padding:5px 12px;position:relative}
+.gr+.gr::before{content:"";position:absolute;left:12px;right:0;top:0;border-top:.5px solid var(--sep)}
+.gr .lb{flex:1;min-width:0}
+.gr .lb .s{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.35}
+.gr .lbw{width:150px;flex:none}
+.pop{display:inline-flex;align-items:center;gap:6px;height:24px;border-radius:7px;padding:0 6px 0 9px;background:var(--field);box-shadow:0 0 0 .5px var(--field-brd),0 1px 1px rgba(0,0,0,.05);font-size:13px;white-space:nowrap}
+.pop .ud{color:var(--text2)}
+.fld{height:24px;border-radius:7px;padding:0 8px;background:var(--field);box-shadow:0 0 0 .5px var(--field-brd);display:flex;align-items:center;font-size:13px;flex:1}
+.msl{position:relative;flex:1;height:4px;border-radius:2px;background:var(--track)}
+.msl .f{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--accent)}
+.msl .k{position:absolute;top:50%;width:20px;height:20px;border-radius:10px;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 1px 3px rgba(0,0,0,.25);transform:translate(-50%,-50%)}
+.vv{width:44px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text2);flex:none}
+.kbd{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--chip);color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff}
+.plrow{display:flex;align-items:center;gap:10px;padding:8px 12px;position:relative}
+.plrow+.plrow::before{content:"";position:absolute;left:52px;right:0;top:0;border-top:.5px solid var(--sep)}
+.plrow.sel{background:color-mix(in srgb,var(--accent) 13%,transparent)}
+.plrow .c{width:30px;height:30px;border-radius:15px;display:grid;place-items:center;flex:none;color:#fff}
+.plrow .nm{font-size:13px;font-weight:600}
+.plrow .sm{font-size:11px;color:var(--text2);margin-top:1px}
+.gbar{display:flex;gap:2px;padding:6px 8px;border-top:.5px solid var(--sep);align-items:center}
+.gbar span.sq2{width:24px;height:22px;border-radius:5px;display:grid;place-items:center;color:var(--text2)}
+.gbar .btn{margin-left:auto}
+.segc{display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--chip);border-radius:8px;padding:2px;gap:2px}
+.segc span{padding:3px 14px;font-size:12px;text-align:center;border-radius:6px;white-space:nowrap}
+.segc span.on{background:var(--segon);box-shadow:0 1px 2px rgba(0,0,0,.14),0 0 0 .5px rgba(0,0,0,.06);font-weight:500}
+.icp{display:flex;gap:6px}
+.icp span{width:28px;height:28px;border-radius:14px;background:var(--chip);display:grid;place-items:center;color:var(--text2)}
+.icp span.on{background:var(--accent);color:#fff;box-shadow:0 0 0 2px var(--win),0 0 0 3.5px var(--accent)}
+.cb{width:15px;height:15px;border-radius:4px;background:var(--field);box-shadow:0 0 0 .5px var(--field-brd);display:grid;place-items:center;flex:none;color:#fff}
+.cb.on{background:var(--accent);box-shadow:none}
+.foot{font-size:11px;color:var(--text2);line-height:1.45;padding:0 10px}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px}
+.th{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;text-align:center}
+.th .scr{width:100%;height:62px;border-radius:9px;background:var(--wall);position:relative;overflow:hidden;box-shadow:0 0 0 .5px var(--sep);margin-bottom:4px}
+.th.on .scr{box-shadow:0 0 0 2.5px var(--accent)}
+.th .cp{position:absolute;left:50%;transform:translateX(-50%);width:58%;height:11px;border-radius:6px;background:var(--glass);box-shadow:0 2px 6px rgba(0,0,0,.2);border:.5px solid var(--glass-brd)}
+.th .sq3{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:8px;background:var(--glass);box-shadow:0 2px 6px rgba(0,0,0,.2);border:.5px solid var(--glass-brd)}
+.th.on .lbl{color:var(--accent);font-weight:600}
+.th .rec{font-size:10px;color:var(--text2)}
+.wtag{font-size:10px;color:var(--text3)}
+
+/* alerte (feuille sur Réglages) */
+.alert{position:absolute;width:260px;border-radius:24px;padding:20px 18px 16px;background:var(--glass);backdrop-filter:blur(44px) saturate(190%);-webkit-backdrop-filter:blur(44px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh);display:flex;flex-direction:column;gap:8px}
+.alert h3{font-size:13px;font-weight:700;line-height:1.3}
+.alert p{font-size:11px;line-height:1.45;color:var(--text2)}
+.alert .ab{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.alert .ab .btn{justify-content:center;height:30px;border-radius:15px;font-size:13px}
+.aicon{position:relative;width:46px;height:46px}
+.aicon .b2{position:absolute;right:-4px;bottom:-2px;color:var(--orange);background:var(--win);border-radius:10px;padding:1px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.6" fill="currentColor"/><path d="M12 2.6v2.1M12 19.3v2.1M2.6 12h2.1M19.3 12h2.1M5.35 5.35l1.5 1.5M17.15 17.15l1.5 1.5M5.35 18.65l1.5-1.5M17.15 6.85l1.5-1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-sunmin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 5.2v.4M12 18.4v.4M5.2 12h.4M18.4 12h.4M7.2 7.2l.3.3M16.5 16.5l.3.3M7.2 16.8l.3-.3M16.5 7.5l.3-.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 3.7a8.3 8.3 0 0 0 0 16.6z" fill="currentColor"/></symbol>
+  <symbol id="i-spk" viewBox="0 0 24 24"><path d="M3.2 9.3h3.2l4.4-3.8c.6-.5 1.4-.1 1.4.7v11.6c0 .8-.8 1.2-1.4.7l-4.4-3.8H3.2c-.6 0-1-.4-1-1V10.3c0-.6.4-1 1-1z" fill="currentColor"/><path d="M15.4 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.7 7.7 0 0 1 0 10.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none"/></symbol>
+  <mask id="m-slash"><rect width="24" height="24" fill="#fff"/><path d="M4 3.2 20.8 20" stroke="#000" stroke-width="4.4" stroke-linecap="round"/></mask>
+  <symbol id="i-spkslash" viewBox="0 0 24 24"><g mask="url(#m-slash)"><path d="M5.8 9.3h3.2l4.4-3.8c.6-.5 1.4-.1 1.4.7v11.6c0 .8-.8 1.2-1.4.7l-4.4-3.8H5.8c-.6 0-1-.4-1-1V10.3c0-.6.4-1 1-1z" fill="currentColor"/></g><path d="M4 3.2 20.8 20" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-display" viewBox="0 0 24 24"><rect x="2.6" y="4" width="18.8" height="12.6" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 16.6v3M8.2 20h7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-displaysun" viewBox="0 0 24 24"><rect x="2.6" y="4" width="18.8" height="12.6" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 16.6v3M8.2 20h7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="10.3" r="2.2" fill="currentColor"/><path d="M12 6.6v.3M12 13.7v.3M8.3 10.3h.3M15.4 10.3h.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-cable" viewBox="0 0 24 24"><rect x="7.4" y="2.6" width="9.2" height="9" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.4 5.6v2.6M13.6 5.6v2.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.4 11.6v2.2a2.6 2.6 0 0 0 5.2 0v-2.2M12 16.4v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-rects" viewBox="0 0 24 24"><rect x="7.6" y="3.4" width="13.6" height="10.2" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.6 16.6v1.2a2.2 2.2 0 0 1-2.2 2.2H5a2.2 2.2 0 0 1-2.2-2.2v-6.2A2.2 2.2 0 0 1 5 9.4h.6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M9.6 13.9V5.1a2.4 2.4 0 0 1 4.8 0v8.8a4.4 4.4 0 1 1-4.8 0z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="17.4" r="1.9" fill="currentColor"/><path d="M12 15.5V9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M3 6h7.4M15.6 6H21M3 12h2.4M10.6 12H21M3 18h10.4M18.6 18H21"/><circle cx="13" cy="6" r="2.5"/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="18" r="2.5"/></g></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M14.2 3.1a8.9 8.9 0 1 0 6.7 12.7A7.2 7.2 0 0 1 14.2 3.1z" fill="currentColor"/></symbol>
+  <mask id="m-game"><rect width="24" height="24" fill="#fff"/><path d="M7.4 10.6v3.6M5.6 12.4h3.6" stroke="#000" stroke-width="1.6" stroke-linecap="round"/><circle cx="16.1" cy="11.2" r="1.05" fill="#000"/><circle cx="17.9" cy="13.4" r="1.05" fill="#000"/></mask>
+  <symbol id="i-game" viewBox="0 0 24 24"><path mask="url(#m-game)" fill="currentColor" d="M7.3 6.6h9.4c2.5 0 4.2 1.7 4.8 4.5l.9 4.7c.4 2.3-.9 3.8-2.6 3.8-1.2 0-2-.7-2.8-1.8l-1.2-1.7H8.2L7 17.8C6.2 18.9 5.4 19.6 4.2 19.6c-1.7 0-3-1.5-2.6-3.8l.9-4.7c.6-2.8 2.3-4.5 4.8-4.5z"/></symbol>
+  <symbol id="i-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15.6 12 18.9 17.75"/><path d="M15.6 12 18.9 17.75" transform="rotate(60 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(120 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(180 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(240 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(300 12 12)"/></g></symbol>
+  <symbol id="i-photo" viewBox="0 0 24 24"><rect x="2.8" y="4.4" width="18.4" height="15.2" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.4 17.4l5-5.2 3.8 3.8 2.6-2.4 5.8 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="16" cy="9" r="1.7" fill="currentColor"/></symbol>
+  <mask id="m-gear"><rect width="24" height="24" fill="#fff"/><circle cx="12" cy="12" r="3.1" fill="#000"/></mask>
+  <symbol id="i-gear" viewBox="0 0 24 24"><g mask="url(#m-gear)" fill="currentColor"><circle cx="12" cy="12" r="7"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(45 12 12)"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(90 12 12)"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(135 12 12)"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(180 12 12)"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(225 12 12)"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(270 12 12)"/><rect x="10.3" y="1.9" width="3.4" height="4.4" rx="1.1" transform="rotate(315 12 12)"/></g></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.2v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.2 6.3a7.6 7.6 0 1 0 9.6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <mask id="m-warn"><rect width="24" height="24" fill="#fff"/><path d="M12 9v4.8" stroke="#000" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="#000"/></mask>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path mask="url(#m-warn)" fill="currentColor" d="M10.3 3.9c.8-1.4 2.6-1.4 3.4 0l7.7 13.6c.8 1.4-.2 3-1.7 3H4.3c-1.5 0-2.5-1.6-1.7-3z"/></symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M19.4 12.4a7.4 7.4 0 1 1-2.3-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.6 2.9v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-checkc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.4" fill="currentColor"/><path d="M7.6 12.4l3 3 5.8-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-updown" viewBox="0 0 24 24"><path d="M8 9.5 12 5.5l4 4M8 14.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4.4" y="5" width="15.2" height="10.6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.2 18.6h19.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M4.6 10.4A7.6 7.6 0 0 1 18 7.4M19.4 13.6A7.6 7.6 0 0 1 6 16.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.4 3.6v4h-4M5.6 20.4v-4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-kbd" viewBox="0 0 24 24"><rect x="2.4" y="6" width="19.2" height="12" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 10h.01M9.3 10h.01M12.6 10h.01M15.9 10h.01M18 10h.01M6 13.4h.01M18 13.4h.01M9 14.6h6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.9" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5 21 8.2l-9 4.7-9-4.7z" fill="currentColor"/><path d="m3 12.2 9 4.7 9-4.7M3 16l9 4.7 9-4.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.4 2.8 5.2 13.6h6l-1 7.6 8.6-11h-6.2z" fill="currentColor"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.4 9.4a12.4 12.4 0 0 1 17.2 0M6.4 12.6a8 8 0 0 1 11.2 0M9.4 15.8a3.6 3.6 0 0 1 5.2 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18.8" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.9" cy="8" r="1.6" fill="currentColor"/><rect x="3" y="13" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6.1" cy="16" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-batt" viewBox="0 0 24 24"><rect x="2.4" y="7.4" width="17.4" height="9.2" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="4.4" y="9.4" width="10.6" height="5.2" rx="1.2" fill="currentColor"/><path d="M21.6 10.6v2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+ </defs>
+</svg>
+
+<div id="root"></div>
+
+<script>
+const ic=(n,s=16,st='')=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" style="${st}"><use href="#i-${n}"/></svg>`;
+const P=' %';
+const NB=' ';
+
+function ccSlider(pct,icon,o={}){
+  return `<div class="ccs${o.sm?' sm':''}"><div class="f${o.hatch?' hatch':''}" style="width:${Math.max(pct,o.sm?0:12)}%;${o.fill?'background:'+o.fill:''}"></div><div class="i">${o.letter?o.letter:ic(icon,o.sm?13:16)}</div></div>`;
+}
+function menubar(clock='lun. 16 nov.  21:42'){
+  return `<div class="menubar"><span class="appn">Finder</span><span>Fichier</span><span>Édition</span><span class="opt">Présentation</span><span class="opt">Aller</span><span>Fenêtre</span><span class="sp"></span>
+  <span class="mi on" data-icon>${ic('displaysun',17)}</span>${ic('batt',18)}${ic('wifi',15)}${ic('cc',15)}<span class="clock">${clock.replace(/  /g,'&nbsp; ')}</span></div>`;
+}
+function head(sub,dot='ok',badge='acc',bicon='display'){
+  return `<div class="phead"><div class="badge ${badge}">${ic(bicon,18)}</div><div class="t"><div class="ptitle">Mi Monitor</div><div class="psub"><span class="dot ${dot}"></span>${sub}</div></div></div>`;
+}
+const PROFS=[
+  {ic:'aperture',l:'Montage<br>photo sRGB',n:'Montage photo sRGB',sum:'6500 K · lum. 45'+P+' · contraste 70',col:'#007AFF'},
+  {ic:'moon',l:'Nuit',n:'Nuit',sum:'5000 K · lum. 15'+P,col:'#5856D6'},
+  {ic:'game',l:'Jeu',n:'Jeu',sum:'lum. 100'+P+' · contraste 80',col:'#FF9500'}];
+function profils(active){
+  const sum = active>=0
+    ? `<span class="ok">${ic('check',12)}</span><b>${PROFS[active].sum}</b>`
+    : `<span style="color:var(--text3)">${ic('sliders',12)}</span>Réglages modifiés · aucun profil actif`;
+  return `<div class="mod"><div class="mhead"><span class="mtitle">Profils</span><span class="link">${ic('plus',11)}Enregistrer</span></div>
+   <div class="prof">${PROFS.map((p,k)=>`<div class="pf${k===active?' on':''}"><div class="c">${ic(p.ic,19)}</div><div class="l">${p.l}</div></div>`).join('')}</div>
+   <div class="psum">${sum}</div></div>`;
+}
+function sliders(o){
+  const lumV = o.sync ? `<span class="mval acc">${ic('sync',12)}suit le MacBook · ${o.lum}${P}</span>` : `<span class="mval">${o.lum}${P}</span>`;
+  const sonV = o.applying ? `<span class="mval"><span class="spin"></span>Application… ${o.son}${P}</span>` : `<span class="mval">${o.son}${P}</span>`;
+  return `<div class="mod stack">
+   <div><div class="mhead"><span class="mtitle">Luminosité</span>${lumV}</div>${ccSlider(o.lum,o.lum<25?'sunmin':'sun')}</div>
+   <div><div class="mhead"><span class="mtitle">Contraste</span><span class="mval">${o.con}${P}</span></div>${ccSlider(o.con,'contrast')}</div>
+   <div><div class="mhead"><span class="mtitle">Son</span>${sonV}</div><div class="srow">${ccSlider(o.son,'spk',{hatch:o.applying})}<div class="mute">${ic('spkslash',15)}</div></div></div>
+  </div>`;
+}
+const SW={w:'#ffb978',n:'#ffffff',c:'#b9d2ff',u:'conic-gradient(#ff5e5e,#ffd35e,#5ee07a,#5ec8ff,#a35eff,#ff5e5e)'};
+function colorSeg(sel){
+  const it=[['5000 K','Chaud','w'],['6500 K','Neutre','n'],['9300 K','Froid','c'],['Utilisateur','R · V · B','u']];
+  return `<div class="seg">${it.map(([k,s,w],i)=>`<div class="sg${i===sel?' on':''}"><div class="sw" style="background:${SW[w]}"></div><div class="k">${k}</div><div class="s">${s}</div></div>`).join('')}</div>`;
+}
+function gains(){
+  return `<div class="gain">
+   <div class="grow">${ccSlider(54,'',{sm:1,letter:'R',fill:'linear-gradient(90deg,#ff8a80,#ff6259)'})}<span class="gv">54</span></div>
+   <div class="grow">${ccSlider(50,'',{sm:1,letter:'V',fill:'linear-gradient(90deg,#8de39a,#4cd964)'})}<span class="gv">50</span></div>
+   <div class="grow">${ccSlider(42,'',{sm:1,letter:'B',fill:'linear-gradient(90deg,#8cc4ff,#3f9bff)'})}<span class="gv">42</span></div>
+  </div>`;
+}
+const SRC=[['HDMI 1','','display'],['HDMI 2','','display'],['DisplayPort 1','','display'],['USB‑C','DisplayPort 2 · Ce Mac','cable']];
+function sourceList(o){
+  return `<div class="src">${SRC.map(([n,d,i],k)=>{
+    const act=k===3, hov=o.hover===k, sel=o.confirm===k;
+    return `<div class="so${act?' act':''}${hov?' hov':''}${sel?' sel':''}"><div class="si">${ic(i,14)}</div><div class="nm">${n}${d?`<div class="ds">${d}</div>`:''}</div>${act?`<span class="ck">${ic('check',15)}</span>`:''}${hov?`<span class="ds">Demande confirmation</span>`:''}</div>`}).join('')}</div>
+   ${o.confirm!=null?`<div class="iconf"><div class="h"><span style="color:var(--orange)">${ic('warn',16)}</span>Basculer sur ${SRC[o.confirm][0]} ?</div>
+     <p>Ce Mac n’aura plus d’image sur le Mi Monitor. Pour revenir, choisissez l’entrée USB‑C (DisplayPort 2) avec les boutons de l’écran.</p>
+     <div class="btns"><span class="btn">Annuler</span><span class="btn pri">Basculer</span></div></div>`:''}`;
+}
+function rows(o){
+  const cOpen=o.colorOpen, sOpen=o.srcOpen;
+  return `<div class="mod rows" style="padding:3px 0">
+   <div class="drow"><div class="badge org">${ic('thermo',16)}</div><div class="dt"><div class="a">Couleur</div>${cOpen?`<div class="b">Préréglage de l’écran</div>`:''}</div><span class="dv">${o.color}</span><span class="chev${cOpen?' open':''}">${ic('chev',11)}</span></div>
+   ${cOpen?`<div class="dexp">${colorSeg(o.colorSel)}${o.colorSel===3?gains()+`<div class="dnote">Écriture lente : au plus une valeur par seconde.</div>`:`<div class="dnote">Gains R V B actifs en préréglage Utilisateur.</div>`}</div>`:''}
+   <div class="drow top"><div class="badge acc">${ic('cable',16)}</div><div class="dt"><div class="a">Source</div>${sOpen?`<div class="b">Changement soumis à confirmation</div>`:''}</div><span class="dv">${sOpen?'':'USB‑C · Ce Mac'}</span><span class="chev${sOpen?' open':''}">${ic('chev',11)}</span></div>
+   ${sOpen?`<div class="dexp">${sourceList(o)}</div>`:''}
+   ${o.noSync?'':`<div class="drow top"><div class="badge ${o.sync?'ind':'gray'}">${ic('laptop',16)}</div><div class="dt"><div class="a">Suivre le MacBook</div><div class="b">${o.sync?'Luminosité synchronisée':'Luminosité indépendante'}</div></div><span class="tog${o.sync?' on':''}"></span></div>`}
+  </div>`;
+}
+function foot(){
+  return `<div class="pfoot"><div class="lk">${ic('sliders',15)}Réglages de Mi Monitor…<span class="k">⌘,</span></div><div class="lk">${ic('power',15,'opacity:0')}Quitter Mi Monitor<span class="k">⌘Q</span></div></div>`;
+}
+function panel(o){
+  return `<div class="panel" ${o.anchor?'data-anchor="1"':''} style="${o.pos||''}">
+   ${head('Connecté · USB‑C (DisplayPort 2)')}
+   ${profils(o.prof)}
+   ${sliders(o)}
+   ${rows(o)}
+   ${foot()}
+  </div>`;
+}
+function errorPanel(pos){
+  return `<div class="panel" style="${pos}">
+   ${head('Détecté · DDC/CI ne répond pas','warn','org','warn')}
+   <div class="err"><div class="h"><span style="color:var(--orange)">${ic('warn',18)}</span>Le Mi Monitor ne répond pas</div>
+    <p>Branché, mais sans réponse DDC/CI. Vérifiez que DDC/CI est activé dans le menu de l’écran.</p>
+    <div class="chk"><div><span style="color:var(--green)">${ic('checkc',15)}</span>Écran détecté par macOS<span class="s">· USB‑C</span></div>
+     <div><span style="color:var(--orange)">${ic('warn',15)}</span>Lecture luminosité (0x10)<span class="s">· délai dépassé</span></div></div>
+    <div class="btns" style="margin-top:3px"><span class="btn pri">${ic('retry',13)}Réessayer</span><span class="btn">Diagnostic…</span></div>
+    </div>
+   <div class="mod stack dis">
+    <div><div class="mhead"><span class="mtitle">Luminosité</span><span class="last">— dernière : 45${P}</span></div>${ccSlider(45,'sun')}</div>
+    <div><div class="mhead"><span class="mtitle">Contraste</span><span class="last">— dernière : 70${P}</span></div>${ccSlider(70,'contrast')}</div>
+    <div><div class="mhead"><span class="mtitle">Son</span><span class="last">— dernière : 6${P}</span></div><div class="srow">${ccSlider(6,'spk')}<div class="mute">${ic('spkslash',15)}</div></div></div>
+   </div>
+   ${foot()}
+  </div>`;
+}
+function notches(n,total=16){return `<div class="notches">${Array.from({length:total},(_,i)=>`<i class="${i<n?'f':''}"></i>`).join('')}</div>`}
+function osd(o){
+  return `<div class="osd" style="${o.pos}"><div class="ob">${ic(o.icon,20)}</div><div class="oc"><div class="ot"><span class="on1">${o.title}</span><span class="on2">${o.applying?`<span class="spin"></span>Application…`:'Mi Monitor'}</span></div>${notches(o.n)}</div><div class="ov">${o.val}</div></div>`;
+}
+function frame(cls,w,h,inner,mb=true){
+  return `<div class="frame ${cls}${w<600?' narrow':''}" ${h==='auto'?'data-auto="1"':''} style="width:${w}px;height:${h==='auto'?600:h}px">${mb?menubar():''}${inner}</div>`;
+}
+function ptop(n,title,sub){
+  return `<div class="ptop"><div class="pnum">${n}</div><h1>${title}</h1><span class="app">Mi Monitor · maquette finale</span><span class="pg">Planche ${n} / 3</span></div><div class="psubt">${sub}</div>`;
+}
+function cap(n,b,t){return `<div class="cap"><span class="n">${n}</span><b>${b}</b> ${t}</div>`}
+
+/* ---------- fenêtres Réglages ---------- */
+function sidebar(on){
+  const it=[['Général','gear','#8e8e93'],['Profils','layers','#007AFF'],['Raccourcis','bolt','#FF2D55'],['À propos','info','#5856D6']];
+  return `<div class="side"><div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+   ${it.map(([l,i,c])=>`<div class="sitem${l===on?' on':''}"><span class="sq" style="background:${c}">${ic(i,14)}</span>${l}</div>`).join('')}
+   <div class="scard"><div class="badge acc">${ic('display',15)}</div><div><div class="a">Mi Monitor</div><div class="psub"><span class="dot ok"></span>Connecté · USB‑C</div></div></div>
+  </div>`;
+}
+function msl(p){return `<div class="msl"><div class="f" style="width:${p}%"></div><div class="k" style="left:${p}%"></div></div>`}
+function winProfils(pos){
+  return `<div class="win" style="${pos}">${sidebar('Profils')}
+   <div class="content"><h2>Profils</h2>
+    <div><div class="gh">Profils enregistrés</div>
+     <div class="grp">
+      ${PROFS.map((p,k)=>`<div class="plrow${k===0?' sel':''}"><div class="c" style="background:${p.col}">${ic(p.ic,16)}</div><div style="flex:1"><div class="nm">${p.n}</div><div class="sm">${p.sum}${k===0?'':''}</div></div>${k===0?'<span class="pill">Actif</span>':''}<span class="kbd">⌃⌥${k+1}</span></div>`).join('')}
+      <div class="gbar"><span class="sq2">${ic('plus',13)}</span><span class="sq2">${ic('minus',13)}</span><span class="btn">Créer depuis les réglages actuels</span></div>
+     </div></div>
+    <div><div class="gh">Modifier « Montage photo sRGB »</div>
+     <div class="grp">
+      <div class="gr"><span class="lbw">Nom</span><span class="fld">Montage photo sRGB</span></div>
+      <div class="gr"><span class="lbw">Icône</span><div class="icp"><span class="on">${ic('aperture',15)}</span><span>${ic('photo',15)}</span><span>${ic('moon',14)}</span><span>${ic('game',15)}</span><span>${ic('sun',15)}</span><span>${ic('display',15)}</span></div></div>
+      <div class="gr"><span class="lbw">Préréglage couleur</span><div class="segc"><span>5000 K</span><span class="on">6500 K</span><span>9300 K</span><span>Utilisateur</span></div></div>
+      <div class="gr"><span class="lbw">Luminosité</span>${msl(45)}<span class="vv">45${P}</span></div>
+      <div class="gr"><span class="lbw">Contraste</span>${msl(70)}<span class="vv">70${P}</span></div>
+      <div class="gr"><span class="lbw">Son</span><span class="cb on">${ic('check',11)}</span><span>Ne pas modifier le volume</span></div>
+      <div class="gr"><span class="lbw">Raccourci clavier</span><span class="kbd">⌃⌥1</span><span class="lb"></span><span class="btn">Enregistrer un raccourci</span></div>
+     </div>
+     <div class="foot" style="margin-top:8px">Pas de mode sRGB sur cet écran : ce profil s’en approche (6500 K, luminosité réduite).</div></div>
+   </div></div>`;
+}
+function th(kind,label,on,rec){
+  const inner = kind==='top'?`<div class="cp" style="top:8px"></div>`:kind==='bot'?`<div class="cp" style="bottom:8px"></div>`:kind==='sq'?`<div class="sq3"></div>`:'';
+  return `<div class="th${on?' on':''}"><div class="scr">${inner}</div><span class="lbl">${label}</span>${rec?`<span class="rec">${rec}</span>`:''}</div>`;
+}
+function winGeneral(pos){
+  return `<div class="win" style="${pos}">${sidebar('Général')}
+   <div class="content"><h2>Général</h2>
+    <div class="grp"><div class="gr"><div class="lb">Ouvrir à la connexion</div><span class="tog on"></span></div></div>
+    <div><div class="gh">Clavier</div><div class="grp">
+     <div class="gr"><div class="lb">Touches de luminosité et de volume<div class="s">Agissent sur le Mi Monitor quand le pointeur s’y trouve (Accessibilité)</div></div><span class="tog on"></span></div>
+     <div class="gr"><div class="lb">Pas de réglage</div><span class="pop">16 crans · 6,25${P}<span class="ud">${ic('updown',11)}</span></span></div>
+    </div></div>
+    <div><div class="gh">Luminosité</div><div class="grp">
+     <div class="gr"><div class="lb">Suivre l’écran du MacBook<div class="s">Un réglage manuel suspend la synchro jusqu’au prochain changement sur le MacBook</div></div><span class="tog on"></span></div>
+     <div class="gr"><span class="lbw">Écart</span>${msl(42)}<span class="vv">−10${P}</span></div>
+    </div></div>
+    <div><div class="gh">Affichage à l’écran (OSD)</div><div class="grp"><div class="thumbs">
+     ${th('top','Capsule en haut',1,'Recommandé')}${th('bot','Capsule en bas',0)}${th('sq','Façon système',0)}${th('','Aucun',0)}
+    </div></div></div>
+    <div><div class="gh">Écran</div><div class="grp">
+     <div class="gr"><div class="lb">Mettre l’écran en veille<div class="s">Réveil depuis le panneau ou le bouton de l’écran</div></div><span class="btn">${ic('power',12)}Mettre en veille…</span></div>
+    </div><div class="foot" style="margin-top:6px">Son et gains R V B : écriture lente, la dernière valeur part au plus une fois par seconde.</div></div>
+   </div></div>`;
+}
+function winRaccourcis(pos){
+  const tok=t=>`<span class="tok">${t}</span>`;
+  return `<div class="win" style="${pos}">${sidebar('Raccourcis')}
+   <div class="content"><h2>Raccourcis</h2>
+    <div><div class="gh">Actions disponibles dans Raccourcis et Spotlight</div><div class="grp">
+     <div class="gr"><span class="sq" style="background:#007AFF">${ic('sun',14)}</span><div class="lb">Régler la luminosité du Mi Monitor à ${tok('45'+P)}</div></div>
+     <div class="gr"><span class="sq" style="background:#5856D6">${ic('layers',14)}</span><div class="lb">Appliquer le profil ${tok('Nuit')}</div></div>
+    </div><div class="foot" style="margin-top:6px">Les jetons bleus sont modifiables dans l’app Raccourcis.</div></div>
+    <div><span class="btn">Ouvrir Raccourcis</span></div>
+   </div></div>`;
+}
+function winAPropos(pos){
+  const kv=(k,v)=>`<div class="gr"><span class="lbw">${k}</span><span class="lb" style="text-align:right;color:var(--text2);font-variant-numeric:tabular-nums">${v}</span></div>`;
+  return `<div class="win" style="${pos}">${sidebar('À propos')}
+   <div class="content"><h2>À propos</h2>
+    <div style="display:flex;gap:18px;align-items:flex-start">
+     <div style="width:132px;flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding-top:18px"><div class="badge acc" style="width:52px;height:52px;border-radius:14px">${ic('displaysun',30)}</div><div style="font-size:15px;font-weight:650">Mi Monitor</div><div style="font-size:11px;color:var(--text2)">Version 1.0</div></div>
+     <div style="flex:1;min-width:0"><div class="gh">Écran (lu par DDC/CI et EDID)</div><div class="grp">
+     ${kv('Micrologiciel','V1.0.10')}${kv('Version MCCS','2.2a')}${kv('Numéro de série','0000000000000')}${kv('Connexion','USB‑C (DisplayPort 2)')}
+    </div></div></div>
+   </div></div>`;
+}
+
+/* ---------- planches ---------- */
+const W2=(1800-96-24)/2; // 840
+const W3=(1800-96-48)/3; // 552
+
+const p1 = `<section class="planche" id="p1">${ptop(1,'Panneau de la barre des menus','Modules du Centre de contrôle, actions fréquentes en haut (profils, puis luminosité, contraste et son), Couleur et Source repliées avec leur valeur courante. Rien que ce que l’écran accepte vraiment.')}
+ <div class="row">
+  <div class="cell">${frame('light',W2,'auto',
+     panel({prof:0,lum:45,con:70,son:6,color:'6500 K · Neutre',anchor:1})+
+     panel({prof:-1,lum:45,con:70,son:6,color:'Utilisateur',colorOpen:1,colorSel:3,pos:'left:16px;top:38px'}))}
+   ${cap('1','Clair.','À droite : le panneau tel qu’il s’ouvre sous l’icône, profil « Montage photo sRGB » actif (son résumé s’affiche sous les profils). À gauche : la rangée Couleur dépliée en préréglage Utilisateur, avec ses gains R/V/B. Une valeur a été modifiée, donc plus aucun profil n’est actif.')}</div>
+  <div class="cell">${frame('dark',W2,'auto',
+     panel({prof:1,lum:15,sync:1,con:75,son:12,applying:1,color:'5000 K · Chaud',anchor:1})+
+     panel({prof:1,lum:15,sync:1,con:75,son:6,color:'5000 K · Chaud',srcOpen:1,hover:0,pos:'left:16px;top:38px'}))}
+   ${cap('2','Sombre.','À droite : profil « Nuit » actif, luminosité qui suit le MacBook (15 %), son monté d’un cran (6 → 12 %) en cours d’écriture (curseur hachuré, « Application… »). À gauche : la liste des sources ; survoler HDMI 1 annonce la confirmation.')}</div>
+ </div></section>`;
+
+const p2 = `<section class="planche" id="p2">${ptop(2,'États : OSD, erreurs et confirmations','OSD en capsule de verre (16 crans francs) quand les touches du clavier agissent sur le Mi Monitor ; erreurs et confirmation de source affichées dans le panneau.')}
+ <div class="row">
+  <div class="cell">${frame('light',W2,192,
+     `<div class="ghostwin" style="left:70px;top:120px;width:300px;height:170px"></div><div class="ghostwin" style="left:470px;top:150px;width:280px;height:140px"></div>`+
+     osd({pos:'top:40px',icon:'sun',title:'Luminosité',n:7,val:'45'+P})+
+     osd({pos:'bottom:16px',icon:'spk',title:'Son',n:2,val:'12'+P,applying:1}))}
+   ${cap('3','OSD clair.','En haut : luminosité 45 % (capsule en haut, recommandé). En bas : son de 6 à 12 % (un cran), écriture lente en cours.')}</div>
+  <div class="cell">${frame('dark',W2,192,
+     `<div class="ghostwin" style="left:70px;top:120px;width:300px;height:170px"></div><div class="ghostwin" style="left:470px;top:150px;width:280px;height:140px"></div>`+
+     osd({pos:'top:40px',icon:'sunmin',title:'Luminosité',n:2,val:'15'+P})+
+     osd({pos:'bottom:16px',icon:'spkslash',title:'Sourdine',n:0,val:'—'}))}
+   ${cap('4','OSD sombre.','Luminosité basse (petit soleil). Sourdine émulée : volume à 0, jauge vide ; au rappui, 6 % revient.')}</div>
+ </div>
+ <div class="row">
+  <div class="cell">${frame('light',W3,'auto',errorPanel('left:50%;transform:translateX(-50%);top:44px'))}
+   ${cap('5','Le Mi Monitor ne répond pas.','La liste de diagnostic indique ce qui marche encore. Les commandes sont grisées et gardent leur dernière valeur connue. Réessayer relance la lecture.')}</div>
+  <div class="cell">${frame('dark',W3,'auto',
+     `<div class="panel" style="left:50%;transform:translateX(-50%);top:44px">${head('Connecté · USB‑C (DisplayPort 2)')}${rows({color:'5000 K · Chaud',srcOpen:1,confirm:0,sync:1,noSync:1})}${foot()}</div>`)}
+   ${cap('6','Changer de source.','Après un clic sur HDMI 1, la question s’affiche dans la rangée dépliée, sans alerte qui fermerait le panneau (profils et curseurs masqués ici).')}</div>
+  <div class="cell">${frame('light',W3,'auto',
+     `<div class="win" style="left:36px;top:52px;width:480px;height:400px;filter:blur(1.5px);opacity:.85">${sidebar('Général')}<div class="content"><h2>Général</h2><div class="grp"><div class="gr"><div class="lb">Ouvrir à la connexion</div><span class="tog on"></span></div></div><div class="grp"><div class="gr"><div class="lb">Touches de luminosité et de volume</div><span class="tog on"></span></div><div class="gr"><div class="lb">Pas de réglage</div></div></div></div></div>`+
+     `<div class="alert" style="left:146px;top:112px"><div class="aicon"><div class="badge acc" style="width:46px;height:46px;border-radius:13px">${ic('display',24)}</div><span class="b2">${ic('power',16)}</span></div>
+       <h3>Mettre le Mi Monitor en veille ?</h3><p>L’écran s’éteint. Pour le rallumer, utilisez « Réveiller » dans le panneau ou le bouton de l’écran.</p>
+       <div class="ab"><span class="btn pri">Mettre en veille</span><span class="btn">Annuler</span></div></div>`+
+     `<div class="mini" style="left:50%;transform:translateX(-50%);top:460px" data-after2="1"><div class="badge gray">${ic('display',17)}</div><div class="t"><div class="ptitle">Mi Monitor</div><div class="psub"><span class="dot off"></span>Débranché · en attente</div></div><span class="btn">${ic('retry',12)}Réessayer</span></div>`+
+     `<div class="mini" style="left:50%;transform:translateX(-50%);top:530px" data-after2="2"><div class="badge gray">${ic('moon',16)}</div><div class="t"><div class="ptitle">Mi Monitor</div><div class="psub"><span class="dot warn"></span>En veille</div></div><span class="btn pri">${ic('power',12)}Réveiller</span></div>`)}
+   ${cap('7','Mise en veille.','Lancée depuis Réglages › Général, toujours confirmée. Dessous : panneau réduit, écran débranché (reconnexion auto) ou en veille.')}</div>
+ </div></section>`;
+
+const p3 = `<section class="planche" id="p3">${ptop(3,'Fenêtre Réglages','Style Réglages Système : barre latérale flottante à carrés colorés, état de l’écran en bas, groupes arrondis. Quatre onglets : Général, Profils, Raccourcis, À propos.')}
+ <div class="row">
+  <div class="cell">${frame('light',W2,624,winProfils('left:36px;top:22px;width:768px;height:580px'),false)}
+   ${cap('8','Clair · onglet Profils.','Profil actif, raccourci ⌃⌥n, création depuis les réglages actuels ; l’éditeur s’en tient à ce que l’écran sait faire.')}</div>
+  <div class="cell">${frame('dark',W2,624,winGeneral('left:36px;top:22px;width:768px;height:580px'),false)}
+   ${cap('9','Sombre · onglet Général.','Ouverture à la connexion, touches du clavier, synchro avec le MacBook et son écart, style d’OSD, mise en veille.')}</div>
+ </div>
+ <div class="row">
+  <div class="cell">${frame('dark',W2,284,winRaccourcis('left:36px;top:18px;width:768px;height:248px'),false)}
+   ${cap('10','Sombre · onglet Raccourcis.','Les deux App Intents, avec leurs paramètres en jetons bleus. Les mêmes phrases servent dans Spotlight.')}</div>
+  <div class="cell">${frame('light',W2,284,winAPropos('left:36px;top:18px;width:768px;height:248px'),false)}
+   ${cap('11','Clair · onglet À propos.','Données lues sur l’écran : micrologiciel, version MCCS, numéro de série et connexion.')}</div>
+ </div></section>`;
+
+document.getElementById('root').innerHTML = p1+p2+p3;
+
+/* panneau ancré sous l’icône de la barre des menus */
+document.querySelectorAll('.frame').forEach(fr=>{
+  const icn=fr.querySelector('[data-icon]'); const pn=fr.querySelector('[data-anchor]');
+  if(!icn||!pn) return;
+  const fb=fr.getBoundingClientRect(), ib=icn.getBoundingClientRect();
+  const cx=ib.left+ib.width/2-fb.left;
+  const left=Math.min(cx-200, fb.width-340-14);
+  pn.style.left=left+'px'; pn.style.top='38px';
+  const tag=fr.querySelector('[data-tag]'); const v=[...fr.querySelectorAll('.panel')].find(p=>!p.dataset.anchor);
+  if(tag&&v){const vb=v.getBoundingClientRect(); tag.style.left=(vb.left-fb.left+12)+'px'; tag.style.top=(vb.bottom-fb.top+12)+'px';}
+});
+
+/* cartes compactes sous le panneau, puis hauteur auto des cadres (égalisée par rangée) */
+document.querySelectorAll('.frame').forEach(fr=>{
+  const pn=fr.querySelector('.panel'); if(!pn) return;
+  let y=pn.offsetTop+pn.offsetHeight+14;
+  fr.querySelectorAll('[data-after]').forEach(m=>{m.style.top=y+'px'; y+=m.offsetHeight+10;});
+});
+document.querySelectorAll('.row').forEach(r=>{
+  const fs=[...r.querySelectorAll('.frame[data-auto]')]; if(!fs.length) return;
+  let mx=0;
+  fs.forEach(fr=>{const fb=fr.getBoundingClientRect(); fr.querySelectorAll('.panel,.mini,.alert,.tag,.win').forEach(c=>{mx=Math.max(mx,c.getBoundingClientRect().bottom-fb.top);});});
+  fs.forEach(fr=>fr.style.height=(Math.ceil(mx)+20)+'px');
+});
+
+/* ?planche=N ou #pN : isole une planche pour la capture */
+const q=new URLSearchParams(location.search).get('planche')||(location.hash.match(/p(\d)/)||[])[1];
+if(q){document.querySelectorAll('.planche').forEach(s=>{if(s.id!=='p'+q)s.style.display='none'; else s.style.borderTop='0';});}
+document.body.dataset.h=document.documentElement.scrollHeight+'|'+[...document.querySelectorAll('.frame')].map(f=>f.offsetHeight).join(',');
+</script>
+</body>
+</html>

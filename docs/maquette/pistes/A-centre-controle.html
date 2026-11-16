@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mi Monitor · Piste A</title>
+<meta name="viewport" content="width=1800">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#e6e6eb}
+body{width:1800px;font-family:system-ui;font-size:13px;color:#1d1d1f;-webkit-font-smoothing:antialiased;letter-spacing:-.08px}
+svg.ic{display:block;flex:none}
+.board{padding:40px 48px 44px}
+.btitle{display:flex;align-items:baseline;gap:16px;margin-bottom:6px}
+.btitle h1{font-size:28px;font-weight:700;letter-spacing:-.5px}
+.btitle .tag{font-size:12px;font-weight:600;color:#fff;background:#007AFF;border-radius:20px;padding:3px 10px}
+.bsub{font-size:13px;color:#6e6e73;margin-bottom:26px;max-width:1200px;line-height:1.45}
+.sec{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:650;margin:0 0 12px}
+.sec .n{width:22px;height:22px;border-radius:11px;background:#1d1d1f;color:#fff;font-size:12px;display:grid;place-items:center}
+.sec .hint{font-size:12px;font-weight:400;color:#86868b}
+.row{display:flex;gap:24px}
+.cell{display:flex;flex-direction:column;gap:8px}
+.cap{font-size:12px;color:#6e6e73;line-height:1.4;padding-left:2px}
+.cap b{color:#1d1d1f;font-weight:600}
+.gapS{height:36px}
+
+/* ---------- thèmes ---------- */
+.light{
+  --text:#1d1d1f;--text2:rgba(60,60,67,.64);--text3:rgba(60,60,67,.38);
+  --accent:#007AFF;--onaccent:#fff;
+  --glass:rgba(244,244,248,.56);--glass-brd:rgba(255,255,255,.7);--glass-sh:0 22px 60px rgba(20,20,60,.22),0 0 0 .5px rgba(0,0,0,.10);
+  --mod:rgba(255,255,255,.52);--mod-brd:rgba(255,255,255,.55);
+  --track:rgba(0,0,0,.085);--fill:#fff;--sl-ic:#6e6e73;
+  --chip:rgba(0,0,0,.06);--chip2:rgba(0,0,0,.04);
+  --sep:rgba(0,0,0,.09);
+  --orange:#FF9500;--green:#34C759;--red:#FF3B30;
+  --win:#fbfbfd;--group:rgba(0,0,0,.038);--side:rgba(232,232,238,.72);--field:#fff;--field-brd:rgba(0,0,0,.12);
+  --menubar:rgba(255,255,255,.38);--menubar-t:#1d1d1f;
+  --wall:radial-gradient(ellipse at 12% 18%,#ffcf9f 0,transparent 46%),radial-gradient(ellipse at 88% 6%,#9cc2ff 0,transparent 52%),radial-gradient(ellipse at 74% 86%,#f7a3c4 0,transparent 50%),radial-gradient(ellipse at 18% 92%,#93e2d2 0,transparent 46%),radial-gradient(ellipse at 50% 50%,#d9d0ff 0,transparent 60%),#ece6f6;
+  color:var(--text);
+}
+.dark{
+  --text:#f5f5f7;--text2:rgba(235,235,245,.62);--text3:rgba(235,235,245,.34);
+  --accent:#0A84FF;--onaccent:#fff;
+  --glass:rgba(28,28,34,.52);--glass-brd:rgba(255,255,255,.13);--glass-sh:0 22px 60px rgba(0,0,0,.5),0 0 0 .5px rgba(0,0,0,.6);
+  --mod:rgba(255,255,255,.075);--mod-brd:rgba(255,255,255,.06);
+  --track:rgba(255,255,255,.13);--fill:rgba(255,255,255,.94);--sl-ic:#8e8e93;
+  --chip:rgba(255,255,255,.10);--chip2:rgba(255,255,255,.06);
+  --sep:rgba(255,255,255,.10);
+  --orange:#FF9F0A;--green:#30D158;--red:#FF453A;
+  --win:#1f1f22;--group:rgba(255,255,255,.05);--side:rgba(48,48,54,.62);--field:rgba(255,255,255,.07);--field-brd:rgba(255,255,255,.12);
+  --menubar:rgba(0,0,0,.28);--menubar-t:#f5f5f7;
+  --wall:radial-gradient(ellipse at 14% 20%,#6a2fa0 0,transparent 46%),radial-gradient(ellipse at 86% 8%,#1d4f9e 0,transparent 52%),radial-gradient(ellipse at 76% 88%,#a3285e 0,transparent 48%),radial-gradient(ellipse at 16% 92%,#0d6b6b 0,transparent 46%),#111428;
+  color:var(--text);
+}
+
+/* ---------- cadres bureau ---------- */
+.frame{position:relative;border-radius:18px;overflow:hidden;background:var(--wall);box-shadow:0 1px 2px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.08)}
+.menubar{position:absolute;left:0;right:0;top:0;height:30px;background:var(--menubar);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);display:flex;align-items:center;padding:0 14px;gap:18px;color:var(--menubar-t);font-size:13px}
+.menubar .app{font-weight:700}
+.menubar .sp{flex:1}
+.menubar .mi{display:flex;align-items:center;height:22px;padding:0 6px;border-radius:6px}
+.menubar .mi.on{background:rgba(127,127,127,.28)}
+.menubar .clock{font-variant-numeric:tabular-nums}
+
+/* ---------- panneau ---------- */
+.panel{position:absolute;width:330px;border-radius:24px;padding:12px;background:var(--glass);backdrop-filter:blur(44px) saturate(190%);-webkit-backdrop-filter:blur(44px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh),inset 0 1px 0 rgba(255,255,255,.25);display:flex;flex-direction:column;gap:10px}
+.phead{display:flex;align-items:center;gap:10px;padding:2px 2px 2px 4px}
+.badge{width:34px;height:34px;border-radius:17px;display:grid;place-items:center;flex:none}
+.badge.acc{background:var(--accent);color:#fff}
+.badge.gray{background:var(--chip);color:var(--text)}
+.badge.org{background:var(--orange);color:#fff}
+.phead .t{flex:1;min-width:0}
+.ptitle{font-size:15px;font-weight:650;letter-spacing:-.2px}
+.psub{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px;margin-top:1px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:4px;flex:none}
+.dot.ok{background:var(--green)}.dot.warn{background:var(--orange)}.dot.off{background:var(--text3)}
+.rbtn{width:28px;height:28px;border-radius:14px;background:var(--chip);display:grid;place-items:center;color:var(--text);flex:none}
+.mod{background:var(--mod);border-radius:16px;padding:10px 12px 12px;border:.5px solid var(--mod-brd)}
+.mhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.mtitle{font-size:13px;font-weight:600}
+.mval{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:5px}
+.link{font-size:12px;color:var(--accent);font-weight:500}
+
+/* curseur Centre de contrôle */
+.ccs{position:relative;height:28px;border-radius:14px;background:var(--track);overflow:hidden;flex:1}
+.ccs .f{position:absolute;left:0;top:0;bottom:0;background:var(--fill);border-radius:14px;box-shadow:0 0 0 .5px rgba(0,0,0,.06),2px 0 6px rgba(0,0,0,.10)}
+.ccs .i{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--sl-ic)}
+.ccs.sm{height:20px;border-radius:10px}
+.ccs.sm .f{border-radius:10px}
+.ccs.sm .i{left:8px;font-size:10px;font-weight:700;color:#fff;line-height:1}
+.srow{display:flex;align-items:center;gap:8px}
+.mute{width:28px;height:28px;border-radius:14px;background:var(--track);display:grid;place-items:center;color:var(--text);flex:none}
+.mute.on{background:var(--accent);color:#fff}
+
+/* tuiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{display:flex;align-items:center;gap:9px;background:var(--mod);border:.5px solid var(--mod-brd);border-radius:16px;padding:9px 10px;min-width:0}
+.tile .badge{width:30px;height:30px}
+.tile .tt{font-size:12px;font-weight:600;white-space:nowrap}
+.tile .ts{font-size:11px;color:var(--text2);white-space:nowrap}
+.tile .chev{margin-left:auto;color:var(--text3)}
+
+/* préréglages couleur */
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sg{display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 0 6px;border-radius:11px;background:var(--chip2);font-size:11px;font-weight:500;color:var(--text);white-space:nowrap}
+.sg.on{background:var(--accent);color:#fff}
+.sw{width:18px;height:18px;border-radius:9px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
+.sg.on .sw{box-shadow:0 0 0 1.5px #fff}
+
+/* profils */
+.prof{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.pf{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.pf .c{width:40px;height:40px;border-radius:20px;background:var(--chip);display:grid;place-items:center;color:var(--text)}
+.pf.on .c{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(0,122,255,.35)}
+.pf .l{font-size:11px;line-height:1.2;color:var(--text);font-weight:500}
+.pf.on .l{font-weight:650}
+.pf .c.add{background:transparent;border:1.5px dashed var(--text3);color:var(--text2)}
+
+.pfoot{display:flex;align-items:center;justify-content:space-between;padding:6px 6px 0;border-top:.5px solid var(--sep);margin-top:2px}
+.pfoot .lk{font-size:13px;color:var(--text);display:flex;align-items:center;gap:7px;padding:5px 0}
+.pfoot .lk .k{color:var(--text3);font-size:12px}
+
+/* source déployée */
+.src{display:flex;flex-direction:column;gap:2px}
+.so{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px}
+.so .nm{font-size:13px;flex:1}
+.so .ds{font-size:11px;color:var(--text2)}
+.so.hov{background:var(--chip)}
+.so .ck{color:var(--accent)}
+.so .si{width:26px;height:26px;border-radius:13px;background:var(--chip);display:grid;place-items:center}
+.so.act .si{background:var(--accent);color:#fff}
+
+.gain{display:flex;flex-direction:column;gap:6px;margin-top:10px;padding-top:10px;border-top:.5px solid var(--sep)}
+.gain .grow{display:flex;align-items:center;gap:8px}
+.gain .gv{width:26px;text-align:right;font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums}
+.spin{width:12px;height:12px;border-radius:6px;border:1.6px solid var(--text3);border-top-color:var(--accent)}
+
+/* erreur */
+.err{background:var(--mod);border:.5px solid var(--mod-brd);border-radius:16px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:6px}
+.err .h{display:flex;gap:8px;align-items:center;font-weight:650;font-size:13px}
+.err p{font-size:12px;color:var(--text2);line-height:1.4}
+.btns{display:flex;gap:8px;margin-top:6px}
+.btn{height:28px;border-radius:14px;padding:0 13px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;background:var(--chip);color:var(--text);white-space:nowrap}
+.btn.pri{background:var(--accent);color:#fff}
+.dis{opacity:.38;filter:saturate(0)}
+.mini{position:absolute;width:330px;border-radius:20px;padding:10px 12px;background:var(--glass);backdrop-filter:blur(44px) saturate(190%);-webkit-backdrop-filter:blur(44px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh);display:flex;align-items:center;gap:10px}
+.mini .t{flex:1;min-width:0}
+
+/* OSD */
+.osd{position:absolute;left:50%;transform:translateX(-50%);width:372px;height:60px;border-radius:30px;background:var(--glass);backdrop-filter:blur(40px) saturate(190%);-webkit-backdrop-filter:blur(40px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh),inset 0 1px 0 rgba(255,255,255,.22);display:flex;align-items:center;gap:12px;padding:0 20px 0 12px}
+.osd .ob{width:38px;height:38px;border-radius:19px;background:var(--chip);display:grid;place-items:center;flex:none}
+.osd .oc{flex:1;display:flex;flex-direction:column;gap:6px}
+.osd .ot{display:flex;justify-content:space-between;align-items:baseline}
+.osd .on1{font-size:13px;font-weight:650}
+.osd .on2{font-size:11px;color:var(--text2)}
+.notches{display:grid;grid-template-columns:repeat(16,1fr);gap:3px}
+.notches i{height:6px;border-radius:3px;background:var(--track)}
+.notches i.f{background:var(--text)}
+.notches i.h{background:linear-gradient(90deg,var(--text) 50%,var(--track) 50%)}
+.osd .ov{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;width:40px;text-align:right}
+.ghostwin{position:absolute;border-radius:14px;background:rgba(127,127,127,.12);border:.5px solid rgba(255,255,255,.18)}
+
+/* fenêtres Réglages */
+.win{position:absolute;border-radius:26px;background:var(--win);box-shadow:0 28px 70px rgba(0,0,0,.28),0 0 0 .5px rgba(0,0,0,.2);overflow:hidden;display:flex}
+.side{margin:8px;border-radius:18px;background:var(--side);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:.5px solid var(--glass-brd);padding:14px 10px;display:flex;flex-direction:column;gap:2px;flex:none}
+.lights{display:flex;gap:8px;padding:0 4px 14px}
+.lights i{width:12px;height:12px;border-radius:6px;display:block}
+.search{height:28px;border-radius:9px;background:var(--chip);display:flex;align-items:center;gap:6px;padding:0 8px;color:var(--text3);font-size:13px;margin-bottom:10px}
+.sitem{display:flex;align-items:center;gap:8px;height:30px;border-radius:9px;padding:0 6px;font-size:13px;white-space:nowrap}
+.sitem.on{background:var(--accent);color:#fff}
+.sq{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:#fff;flex:none}
+.content{flex:1;padding:16px 24px 20px 14px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.tbar{display:flex;align-items:center;gap:10px;height:30px}
+.tbar .nav{display:flex;gap:2px;color:var(--text3)}
+.tbar .nav span{width:26px;height:26px;border-radius:13px;display:grid;place-items:center;background:var(--chip2)}
+.tbar h2{font-size:15px;font-weight:700}
+.gh{font-size:11px;font-weight:600;color:var(--text2);padding:0 10px 5px;letter-spacing:.1px}
+.grp{background:var(--group);border-radius:12px;overflow:hidden;border:.5px solid var(--sep)}
+.gr{display:flex;align-items:center;gap:10px;min-height:38px;padding:7px 12px;position:relative}
+.gr+.gr::before{content:"";position:absolute;left:12px;right:0;top:0;border-top:.5px solid var(--sep)}
+.gr .lb{flex:1;min-width:0}
+.gr .lb .s{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.3}
+.tog{width:34px;height:20px;border-radius:10px;background:var(--track);position:relative;flex:none}
+.tog::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:8px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tog.on{background:var(--accent)}
+.tog.on::after{left:16px}
+.pop{display:inline-flex;align-items:center;gap:6px;height:24px;border-radius:7px;padding:0 6px 0 9px;background:var(--field);box-shadow:0 0 0 .5px var(--field-brd),0 1px 1px rgba(0,0,0,.05);font-size:13px;white-space:nowrap}
+.pop .ud{color:var(--text2)}
+.fld{height:24px;border-radius:7px;padding:0 8px;background:var(--field);box-shadow:0 0 0 .5px var(--field-brd);display:flex;align-items:center;font-size:13px;width:220px}
+.msl{position:relative;width:200px;height:4px;border-radius:2px;background:var(--track);flex:none}
+.msl .f{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--accent)}
+.msl .k{position:absolute;top:50%;width:20px;height:20px;border-radius:10px;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 1px 3px rgba(0,0,0,.25);transform:translate(-50%,-50%)}
+.vv{width:40px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text2)}
+.kbd{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--chip);color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff}
+.plrow{display:flex;align-items:center;gap:10px;padding:8px 12px;position:relative}
+.plrow+.plrow::before{content:"";position:absolute;left:50px;right:0;top:0;border-top:.5px solid var(--sep)}
+.plrow.sel{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.plrow .c{width:30px;height:30px;border-radius:15px;display:grid;place-items:center;flex:none;color:#fff}
+.plrow .nm{font-size:13px;font-weight:600}
+.plrow .sm{font-size:11px;color:var(--text2);margin-top:1px}
+.gbar{display:flex;gap:1px;padding:6px 8px;border-top:.5px solid var(--sep);align-items:center}
+.gbar span{width:24px;height:22px;border-radius:5px;display:grid;place-items:center;color:var(--text2)}
+.gbar .tx{width:auto;margin-left:auto;font-size:12px;color:var(--accent);padding:0 6px}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px}
+.th{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px}
+.th .scr{width:100%;height:68px;border-radius:9px;background:var(--wall);position:relative;overflow:hidden;box-shadow:0 0 0 .5px var(--sep)}
+.th.on .scr{box-shadow:0 0 0 2.5px var(--accent)}
+.th .cp{position:absolute;left:50%;transform:translateX(-50%);width:58%;height:12px;border-radius:6px;background:var(--glass);box-shadow:0 2px 6px rgba(0,0,0,.2);border:.5px solid var(--glass-brd)}
+.th .sq2{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:9px;background:var(--glass);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.th.on span{color:var(--accent);font-weight:600}
+.intent{display:flex;align-items:center;gap:10px;padding:9px 12px;position:relative}
+.intent+.intent::before{content:"";position:absolute;left:50px;right:0;top:0;border-top:.5px solid var(--sep)}
+.intent .sq{width:28px;height:28px;border-radius:8px}
+.intent .ph{flex:1;font-size:13px;line-height:1.5}
+.tok{display:inline-block;padding:0 7px;border-radius:6px;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-weight:600}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:7px 12px;position:relative;font-size:13px}
+.kv+.kv::before{content:"";position:absolute;left:12px;right:0;top:0;border-top:.5px solid var(--sep)}
+.kv .v{color:var(--text2);font-variant-numeric:tabular-nums;text-align:right}
+.appic{width:64px;height:64px;border-radius:15px;background:linear-gradient(160deg,#5ac8fa,#0a63d8 70%);display:grid;place-items:center;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.35);flex:none}
+
+/* alertes */
+.alert{position:absolute;width:236px;border-radius:24px;padding:18px 16px 14px;background:var(--glass);backdrop-filter:blur(44px) saturate(190%);-webkit-backdrop-filter:blur(44px) saturate(190%);border:.5px solid var(--glass-brd);box-shadow:var(--glass-sh);display:flex;flex-direction:column;gap:8px}
+.alert h3{font-size:13px;font-weight:700;line-height:1.3}
+.alert p{font-size:11px;line-height:1.4;color:var(--text2)}
+.alert .ab{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.alert .ab .btn{justify-content:center;height:30px}
+.alert .btn.danger{background:var(--red);color:#fff}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.6" fill="currentColor"/><path d="M12 2.6v2.1M12 19.3v2.1M2.6 12h2.1M19.3 12h2.1M5.35 5.35l1.5 1.5M17.15 17.15l1.5 1.5M5.35 18.65l1.5-1.5M17.15 6.85l1.5-1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-sunmin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 5.2v.4M12 18.4v.4M5.2 12h.4M18.4 12h.4M7.2 7.2l.3.3M16.5 16.5l.3.3M7.2 16.8l.3-.3M16.5 7.5l.3-.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-contrast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 3.7a8.3 8.3 0 0 0 0 16.6z" fill="currentColor"/></symbol>
+  <symbol id="i-spk" viewBox="0 0 24 24"><path d="M3.2 9.3h3.2l4.4-3.8c.6-.5 1.4-.1 1.4.7v11.6c0 .8-.8 1.2-1.4.7l-4.4-3.8H3.2c-.6 0-1-.4-1-1V10.3c0-.6.4-1 1-1z" fill="currentColor"/><path d="M15.4 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.7 7.7 0 0 1 0 10.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-spk0" viewBox="0 0 24 24"><path d="M5.2 9.3h3.2l4.4-3.8c.6-.5 1.4-.1 1.4.7v11.6c0 .8-.8 1.2-1.4.7l-4.4-3.8H5.2c-.6 0-1-.4-1-1V10.3c0-.6.4-1 1-1z" fill="currentColor"/></symbol>
+  <mask id="m-slash"><rect width="24" height="24" fill="#fff"/><path d="M4 3.2 20.8 20" stroke="#000" stroke-width="4.4" stroke-linecap="round"/></mask>
+  <symbol id="i-spkslash" viewBox="0 0 24 24"><g mask="url(#m-slash)"><path d="M3.6 9.3h3.2l4.4-3.8c.6-.5 1.4-.1 1.4.7v11.6c0 .8-.8 1.2-1.4.7l-4.4-3.8H3.6c-.6 0-1-.4-1-1V10.3c0-.6.4-1 1-1z" fill="currentColor"/><path d="M15.8 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.7 7.7 0 0 1 0 10.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none"/></g><path d="M4 3.2 20.8 20" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-display" viewBox="0 0 24 24"><rect x="2.6" y="4" width="18.8" height="12.6" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 16.6v3M8.2 20h7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-displaysun" viewBox="0 0 24 24"><rect x="2.6" y="4" width="18.8" height="12.6" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 16.6v3M8.2 20h7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="10.3" r="2.2" fill="currentColor"/><path d="M12 6.6v.3M12 13.7v.3M8.3 10.3h.3M15.4 10.3h.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-cable" viewBox="0 0 24 24"><rect x="7.4" y="2.6" width="9.2" height="9" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.4 5.6v2.6M13.6 5.6v2.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.4 11.6v2.2a2.6 2.6 0 0 0 5.2 0v-2.2M12 16.4v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-rects" viewBox="0 0 24 24"><rect x="7.6" y="3.4" width="13.6" height="10.2" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16.6 16.6v1.2a2.2 2.2 0 0 1-2.2 2.2H5a2.2 2.2 0 0 1-2.2-2.2v-6.2A2.2 2.2 0 0 1 5 9.4h.6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M9.6 13.9V5.1a2.4 2.4 0 0 1 4.8 0v8.8a4.4 4.4 0 1 1-4.8 0z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="17.4" r="1.9" fill="currentColor"/><path d="M12 15.5V9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M3 6h7.4M15.6 6H21M3 12h2.4M10.6 12H21M3 18h10.4M18.6 18H21"/><circle cx="13" cy="6" r="2.5"/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="18" r="2.5"/></g></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M14.2 3.1a8.9 8.9 0 1 0 6.7 12.7A7.2 7.2 0 0 1 14.2 3.1z" fill="currentColor"/></symbol>
+  <mask id="m-game"><rect width="24" height="24" fill="#fff"/><path d="M7.4 10.6v3.6M5.6 12.4h3.6" stroke="#000" stroke-width="1.6" stroke-linecap="round"/><circle cx="16.1" cy="11.2" r="1.05" fill="#000"/><circle cx="17.9" cy="13.4" r="1.05" fill="#000"/></mask>
+  <symbol id="i-game" viewBox="0 0 24 24"><path mask="url(#m-game)" fill="currentColor" d="M7.3 6.6h9.4c2.5 0 4.2 1.7 4.8 4.5l.9 4.7c.4 2.3-.9 3.8-2.6 3.8-1.2 0-2-.7-2.8-1.8l-1.2-1.7H8.2L7 17.8C6.2 18.9 5.4 19.6 4.2 19.6c-1.7 0-3-1.5-2.6-3.8l.9-4.7c.6-2.8 2.3-4.5 4.8-4.5z"/></symbol>
+  <symbol id="i-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15.6 12 18.9 17.75"/><path d="M15.6 12 18.9 17.75" transform="rotate(60 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(120 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(180 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(240 12 12)"/><path d="M15.6 12 18.9 17.75" transform="rotate(300 12 12)"/></g></symbol>
+  <symbol id="i-photo" viewBox="0 0 24 24"><rect x="2.8" y="4.4" width="18.4" height="15.2" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.4 17.4l5-5.2 3.8 3.8 2.6-2.4 5.8 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="16" cy="9" r="1.7" fill="currentColor"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-dasharray="2.4 2.37"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.9" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.2v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7.2 6.3a7.6 7.6 0 1 0 9.6 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <mask id="m-warn"><rect width="24" height="24" fill="#fff"/><path d="M12 9v4.8" stroke="#000" stroke-width="2.1" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="#000"/></mask>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path mask="url(#m-warn)" fill="currentColor" d="M10.3 3.9c.8-1.4 2.6-1.4 3.4 0l7.7 13.6c.8 1.4-.2 3-1.7 3H4.3c-1.5 0-2.5-1.6-1.7-3z"/></symbol>
+  <symbol id="i-retry" viewBox="0 0 24 24"><path d="M19.4 12.4a7.4 7.4 0 1 1-2.3-5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.6 2.9v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.6 9.6 17 19 7.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chevl" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-updown" viewBox="0 0 24 24"><path d="M8 9.5 12 5.5l4 4M8 14.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4.4" y="5" width="15.2" height="10.6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.2 18.6h19.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M4.6 10.4A7.6 7.6 0 0 1 18 7.4M19.4 13.6A7.6 7.6 0 0 1 6 16.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M18.4 3.6v4h-4M5.6 20.4v-4h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-kbd" viewBox="0 0 24 24"><rect x="2.4" y="6" width="19.2" height="12" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 10h.01M9.3 10h.01M12.6 10h.01M15.9 10h.01M18 10h.01M6 13.4h.01M18 13.4h.01M9 14.6h6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.9" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5 21 8.2l-9 4.7-9-4.7z" fill="currentColor"/><path d="m3 12.2 9 4.7 9-4.7M3 16l9 4.7 9-4.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.4 2.8 5.2 13.6h6l-1 7.6 8.6-11h-6.2z" fill="currentColor"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M3.4 9.4a12.4 12.4 0 0 1 17.2 0M6.4 12.6a8 8 0 0 1 11.2 0M9.4 15.8a3.6 3.6 0 0 1 5.2 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18.8" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.9" cy="8" r="1.6" fill="currentColor"/><rect x="3" y="13" width="18" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6.1" cy="16" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8.6 12V6.4a1.5 1.5 0 0 1 3 0V11V4.8a1.5 1.5 0 0 1 3 0V11V6.2a1.5 1.5 0 0 1 3 0v8.2c0 3.6-2.6 6.4-6 6.4-2.2 0-3.6-1-4.8-2.8l-2.4-3.8a1.5 1.5 0 0 1 2.4-1.8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+ </defs>
+</svg>
+
+<div id="root"></div>
+
+<script>
+const ic=(n,s=16,st='')=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" style="${st}"><use href="#i-${n}"/></svg>`;
+const P=' %';
+
+function ccSlider(pct,icon,opts={}){
+  return `<div class="ccs${opts.sm?' sm':''}"><div class="f" style="width:${Math.max(pct, opts.sm?0:12)}%;${opts.fill?'background:'+opts.fill:''}"></div><div class="i">${opts.letter?opts.letter:ic(icon,opts.sm?13:16)}</div></div>`;
+}
+function menubar(on=true){
+  return `<div class="menubar"><span class="app">Finder</span><span>Fichier</span><span>Édition</span><span>Présentation</span><span>Aller</span><span>Fenêtre</span><span class="sp"></span>
+  ${ic('wifi',15)}<span class="mi${on?' on':''}">${ic('displaysun',17)}</span>${ic('cc',15)}<span class="clock">lun. 16 nov.&nbsp; 21:42</span></div>`;
+}
+function head(sub,dot='ok',badge='acc',bicon='display'){
+  return `<div class="phead"><div class="badge ${badge}">${ic(bicon,18)}</div><div class="t"><div class="ptitle">Mi Monitor</div><div class="psub"><span class="dot ${dot}"></span>${sub}</div></div><div class="rbtn">${ic('gear',16)}</div></div>`;
+}
+const SW={w:'#ffb978',n:'#ffffff',c:'#b9d2ff',u:'conic-gradient(#ff5e5e,#ffd35e,#5ee07a,#5ec8ff,#a35eff,#ff5e5e)'};
+function colorSeg(sel){
+  const it=[['5000 K','w'],['6500 K','n'],['9300 K','c'],['Utilisateur','u']];
+  return `<div class="seg">${it.map(([l,k],i)=>`<div class="sg${i===sel?' on':''}"><div class="sw" style="background:${SW[k]}"></div>${l}</div>`).join('')}</div>`;
+}
+function profiles(active){
+  const it=[['aperture','Montage<br>photo sRGB'],['moon','Nuit'],['game','Jeu']];
+  return `<div class="prof">${it.map(([i,l],k)=>`<div class="pf${k===active?' on':''}"><div class="c">${ic(i,19)}</div><div class="l">${l}</div></div>`).join('')}
+   <div class="pf"><div class="c add">${ic('plus',17)}</div><div class="l">Nouveau<br>profil</div></div></div>`;
+}
+function foot(){
+  return `<div class="pfoot"><div class="lk">${ic('sliders',15)}Réglages de Mi Monitor…<span class="k">⌘,</span></div><div class="rbtn" title="Mettre en veille">${ic('power',15)}</div></div>`;
+}
+function mainPanel(o){
+  return `<div class="panel" style="${o.pos}">
+   ${head('Connecté · USB‑C (DisplayPort 2)')}
+   <div class="mod"><div class="mhead"><span class="mtitle">Luminosité</span><span class="mval">${o.syncOn?`${ic('sync',11)} suit le MacBook · `:''}${o.lum}${P}</span></div>${ccSlider(o.lum,'sun')}</div>
+   <div class="mod"><div class="mhead"><span class="mtitle">Contraste</span><span class="mval">${o.con}${P}</span></div>${ccSlider(o.con,'contrast')}</div>
+   <div class="mod"><div class="mhead"><span class="mtitle">Son</span><span class="mval">${o.vol}${P}</span></div><div class="srow">${ccSlider(o.vol,'spk')}<div class="mute">${ic('spkslash',15)}</div></div></div>
+   <div class="tiles">
+     <div class="tile"><div class="badge acc">${ic('cable',16)}</div><div><div class="tt">Source</div><div class="ts">USB‑C · Ce Mac</div></div><span class="chev">${ic('chev',11)}</span></div>
+     <div class="tile"><div class="badge ${o.syncOn?'acc':'gray'}">${ic('laptop',16)}</div><div><div class="tt">Synchro Mac</div><div class="ts">${o.syncOn?'Activée':'Désactivée'}</div></div></div>
+   </div>
+   <div class="mod"><div class="mhead"><span class="mtitle">Préréglage couleur</span><span class="mval">${ic('thermo',12)}</span></div>${colorSeg(o.color)}</div>
+   <div class="mod"><div class="mhead"><span class="mtitle">Profils</span><span class="link">Modifier</span></div>${profiles(o.prof)}</div>
+   ${foot()}
+  </div>`;
+}
+function variantPanel(pos){
+  const src=[['HDMI 1','','display',false,true],['HDMI 2','','display',false,false],['DisplayPort 1','','display',false,false],['USB‑C','DisplayPort 2 · Ce Mac','cable',true,false]];
+  return `<div class="panel" style="${pos}">
+   ${head('Connecté · USB‑C (DisplayPort 2)')}
+   <div class="mod" style="padding-bottom:8px"><div class="mhead"><span class="mtitle">Source d’entrée</span><span class="mval">${ic('rects',13)}</span></div>
+    <div class="src">${src.map(([n,d,i,a,h])=>`<div class="so${a?' act':''}${h?' hov':''}"><div class="si">${ic(i,14)}</div><div class="nm">${n}${d?`<div class="ds">${d}</div>`:''}</div>${a?`<span class="ck">${ic('check',15)}</span>`:''}${h?`<span class="ds">Demande confirmation</span>`:''}</div>`).join('')}</div></div>
+   <div class="mod"><div class="mhead"><span class="mtitle">Préréglage couleur</span><span class="mval">${ic('thermo',12)}</span></div>${colorSeg(3)}
+     <div class="gain">
+      <div class="grow">${ccSlider(54,'',{sm:1,letter:'R',fill:'linear-gradient(90deg,#ff8a80,#ff6259)'})}<span class="gv">54</span></div>
+      <div class="grow">${ccSlider(50,'',{sm:1,letter:'V',fill:'linear-gradient(90deg,#8de39a,#4cd964)'})}<span class="gv">50</span></div>
+      <div class="grow">${ccSlider(42,'',{sm:1,letter:'B',fill:'linear-gradient(90deg,#8cc4ff,#3f9bff)'})}<span class="gv">42</span></div>
+     </div></div>
+   <div class="mod"><div class="mhead"><span class="mtitle">Son</span><span class="mval"><span class="spin"></span>Application… 30${P}</span></div><div class="srow">${ccSlider(30,'spk')}<div class="mute">${ic('spkslash',15)}</div></div></div>
+  </div>`;
+}
+function errorPanel(pos){
+  return `<div class="panel" style="${pos}">
+   ${head('DDC/CI ne répond pas','warn','org','warn')}
+   <div class="err"><div class="h"><span style="color:var(--orange)">${ic('warn',18)}</span>Mi Monitor ne répond pas</div>
+    <p>L’écran est détecté, mais les commandes DDC/CI restent sans réponse depuis 3 essais. Vérifiez que DDC/CI est activé dans le menu de l’écran.</p>
+    <div class="btns"><span class="btn pri">${ic('retry',14)}Réessayer</span><span class="btn">Aide</span></div></div>
+   <div class="dis" style="display:flex;flex-direction:column;gap:10px">
+    <div class="mod"><div class="mhead"><span class="mtitle">Luminosité</span><span class="mval">—</span></div>${ccSlider(0,'sun')}</div>
+    <div class="mod"><div class="mhead"><span class="mtitle">Contraste</span><span class="mval">—</span></div>${ccSlider(0,'contrast')}</div>
+    <div class="mod"><div class="mhead"><span class="mtitle">Son</span><span class="mval">—</span></div><div class="srow">${ccSlider(0,'spk')}<div class="mute">${ic('spkslash',15)}</div></div></div>
+   </div>
+   ${foot()}
+  </div>`;
+}
+function mini(pos,icon,badge,title,sub,dot,btn){
+  return `<div class="mini" style="${pos}"><div class="badge ${badge}" style="width:30px;height:30px">${ic(icon,16)}</div><div class="t"><div style="font-weight:650">${title}</div><div class="psub"><span class="dot ${dot}"></span>${sub}</div></div>${btn?`<span class="btn${btn[1]?' pri':''}" style="height:26px">${btn[0]}</span>`:''}</div>`;
+}
+function notches(v){ // 16 crans, quarts de cran
+  const n=v/100*16; let s='';
+  for(let i=0;i<16;i++){ s+= `<i class="${i+1<=n?'f':(i+0.5<=n?'h':'')}"></i>`; }
+  return `<div class="notches">${s}</div>`;
+}
+function osd(pos,icon,label,v,valTxt){
+  return `<div class="osd" style="${pos}"><div class="ob">${ic(icon,20)}</div><div class="oc"><div class="ot"><span class="on1">${label}</span><span class="on2">Mi Monitor</span></div>${notches(v)}</div><div class="ov">${valTxt}</div></div>`;
+}
+function lights(){return `<div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>`;}
+function sidebar(sel,w=206,items){
+  items=items||[['Général','gear','#8e8e93'],['Profils','layers','#007AFF'],['Raccourcis','bolt','#FF2D55'],['À propos','info','#5856D6']];
+  return `<div class="side" style="width:${w}px">${lights()}<div class="search">${ic('search',13)}Rechercher</div>
+   ${items.map(([n,i,c])=>`<div class="sitem${n===sel?' on':''}"><div class="sq" style="background:${c}">${ic(i,14)}</div>${n}</div>`).join('')}</div>`;
+}
+function tbar(t){return `<div class="tbar"><div class="nav"><span>${ic('chevl',12)}</span><span>${ic('chev',12)}</span></div><h2>${t}</h2></div>`;}
+function msl(v){return `<div class="msl"><div class="f" style="width:${v}%"></div><div class="k" style="left:${v}%"></div></div>`;}
+
+/* ======================= PLANCHE ======================= */
+let H=`<div class="board">
+ <div class="btitle"><h1>Mi Monitor — commandes de l’écran externe</h1><span class="tag">Piste A · Centre de contrôle</span></div>
+ <div class="bsub">Maquette statique. Le panneau reprend la grammaire du Centre de contrôle de macOS : modules arrondis empilés, gros curseurs pleins avec le symbole à l’intérieur, préréglages et profils en tuiles. Tout tient sans défilement. Seules les commandes que l’écran accepte vraiment apparaissent : luminosité, contraste, volume (sourdine émulée), préréglage couleur (4 valeurs + gains R/V/B), source, veille.</div>
+
+ <div class="sec"><span class="n">1</span>Panneau de la barre des menus <span class="hint">· 330 pt de large, s’ouvre sous l’icône de l’écran dans la barre des menus</span></div>
+ <div class="row">
+  <div class="cell"><div class="frame light" style="width:840px;height:744px">${menubar()}
+    ${errorPanel('right:366px;top:40px')}
+    ${mini('right:366px;top:566px','display','gray','Mi Monitor','Débranché · rebranchez le câble USB‑C','off',null)}
+    ${mini('right:366px;top:634px','moon','gray','Mi Monitor','En veille','off',['Réveiller',1])}
+    ${mainPanel({pos:'right:16px;top:40px',lum:45,con:70,vol:6,color:1,prof:0,syncOn:false})}
+   </div>
+   <div class="cap"><b>Clair.</b> À droite : état normal, profil « Montage photo sRGB » actif (6500 K, luminosité 45 %, contraste 70). À gauche : états d’erreur — DDC ne répond pas (commandes grisées, « Réessayer »), écran débranché, écran en veille.</div></div>
+  <div class="cell"><div class="frame dark" style="width:840px;height:744px">${menubar()}
+    ${variantPanel('right:366px;top:40px')}
+    ${mainPanel({pos:'right:16px;top:40px',lum:15,con:75,vol:6,color:0,prof:1,syncOn:true})}
+   </div>
+   <div class="cap"><b>Sombre.</b> À droite : profil « Nuit » actif (5000 K, 15 %), luminosité synchronisée avec le MacBook. À gauche : source dépliée (le survol de HDMI 1 annonce la confirmation), préréglage Utilisateur avec gains R/V/B, volume en cours d’application (écriture lente, ≈ 1 par seconde).</div></div>
+ </div>
+
+ <div class="gapS"></div>
+ <div class="sec"><span class="n">2</span>OSD maison <span class="hint">· touches luminosité / volume du clavier quand le pointeur est sur le Mi Monitor — capsule de verre, 16 crans (⌥⇧ = quarts de cran)</span></div>
+ <div class="row">
+  <div class="cell"><div class="frame light" style="width:840px;height:250px">${menubar(false)}
+    <div class="ghostwin" style="left:60px;top:150px;width:300px;height:140px"></div><div class="ghostwin" style="left:520px;top:120px;width:260px;height:160px"></div>
+    ${osd('top:46px','sun','Luminosité',45,'45'+P)}
+    ${osd('bottom:24px','spk','Volume',41,'41'+P)}
+   </div><div class="cap"><b>Clair.</b> Luminosité (capsule en haut, sous la barre des menus) et volume (variante « en bas »). Le dernier cran à moitié rempli montre le réglage fin.</div></div>
+  <div class="cell"><div class="frame dark" style="width:840px;height:250px">${menubar(false)}
+    <div class="ghostwin" style="left:60px;top:150px;width:300px;height:140px"></div><div class="ghostwin" style="left:520px;top:120px;width:260px;height:160px"></div>
+    ${osd('top:46px','sunmin','Luminosité',15,'15'+P)}
+    ${osd('bottom:24px','spkslash','Sourdine',0,'—')}
+   </div><div class="cap"><b>Sombre.</b> Luminosité basse (symbole soleil réduit) et sourdine émulée : le volume passe à 0, la valeur précédente (6 %) est restaurée à la réactivation.</div></div>
+ </div>
+
+ <div class="gapS"></div>
+ <div class="sec"><span class="n">3</span>Fenêtre Réglages <span class="hint">· style Réglages Système, barre latérale flottante</span></div>
+ <div class="row">
+  <div class="cell"><div class="frame light" style="width:840px;height:600px">
+   <div class="win" style="left:20px;top:20px;width:800px;height:560px">${sidebar('Profils')}
+    <div class="content">${tbar('Profils')}
+     <div><div class="gh">PROFILS ENREGISTRÉS</div><div class="grp">
+      <div class="plrow sel"><div class="c" style="background:#007AFF">${ic('aperture',16)}</div><div style="flex:1"><div class="nm">Montage photo sRGB</div><div class="sm">6500 K · luminosité 45 % · contraste 70</div></div><span class="pill">Actif</span><span class="kbd">⌃⌥1</span></div>
+      <div class="plrow"><div class="c" style="background:#5856D6">${ic('moon',15)}</div><div style="flex:1"><div class="nm">Nuit</div><div class="sm">5000 K · luminosité 15 %</div></div><span class="kbd">⌃⌥2</span></div>
+      <div class="plrow"><div class="c" style="background:#FF9500">${ic('game',17)}</div><div style="flex:1"><div class="nm">Jeu</div><div class="sm">luminosité 100 % · contraste 80</div></div><span class="kbd">⌃⌥3</span></div>
+      <div class="gbar"><span>${ic('plus',13)}</span><span>${ic('minus',13)}</span><span class="tx">Créer depuis les réglages actuels</span></div>
+     </div></div>
+     <div><div class="gh">MONTAGE PHOTO SRGB</div><div class="grp">
+      <div class="gr"><div class="lb">Nom</div><div class="fld">Montage photo sRGB</div></div>
+      <div class="gr"><div class="lb">Préréglage couleur</div><span class="pop">6500 K <span class="ud">${ic('updown',11)}</span></span></div>
+      <div class="gr"><div class="lb">Luminosité</div>${msl(45)}<span class="vv">45${P}</span></div>
+      <div class="gr"><div class="lb">Contraste</div>${msl(70)}<span class="vv">70${P}</span></div>
+      <div class="gr"><div class="lb">Volume<div class="s">Laisser le volume tel quel en appliquant ce profil</div></div><span class="pop">Inchangé <span class="ud">${ic('updown',11)}</span></span></div>
+      <div class="gr"><div class="lb">Raccourci clavier</div><span class="kbd">⌃⌥1</span></div>
+     </div></div>
+    </div></div>
+   </div><div class="cap"><b>Clair · onglet Profils.</b> Liste des profils (actif en surbrillance, raccourci clavier), création depuis les réglages actuels, édition du profil sélectionné.</div></div>
+
+  <div class="cell"><div class="frame dark" style="width:840px;height:600px">
+   <div class="win" style="left:20px;top:20px;width:800px;height:560px">${sidebar('Général')}
+    <div class="content">${tbar('Général')}
+     <div class="grp">
+      <div class="gr"><div class="lb">Ouvrir à l’ouverture de session</div><span class="tog on"></span></div>
+     </div>
+     <div><div class="gh">CLAVIER</div><div class="grp">
+      <div class="gr"><div class="lb">Touches de luminosité et de volume<div class="s">Pilotent le Mi Monitor quand le pointeur est sur cet écran</div></div><span class="tog on"></span></div>
+      <div class="gr"><div class="lb">Pas par appui</div><span class="pop">16 crans <span class="ud">${ic('updown',11)}</span></span></div>
+     </div></div>
+     <div><div class="gh">LUMINOSITÉ</div><div class="grp">
+      <div class="gr"><div class="lb">Synchroniser avec l’écran du MacBook<div class="s">Suit la luminosité automatique de l’écran intégré</div></div><span class="tog on"></span></div>
+      <div class="gr"><div class="lb">Décalage</div>${msl(50)}<span class="vv">0${P}</span></div>
+     </div></div>
+     <div><div class="gh">AFFICHAGE À L’ÉCRAN (OSD)</div><div class="grp"><div class="thumbs">
+      <div class="th on"><div class="scr"><div class="cp" style="top:9px"></div></div><span>Capsule en haut</span></div>
+      <div class="th"><div class="scr"><div class="cp" style="bottom:9px"></div></div><span>Capsule en bas</span></div>
+      <div class="th"><div class="scr" style="opacity:.55"></div><span>Aucun OSD</span></div>
+     </div></div></div>
+    </div></div>
+   </div><div class="cap"><b>Sombre · onglet Général.</b> Lancement à l’ouverture de session, touches clavier, synchro de luminosité avec le MacBook, style d’OSD.</div></div>
+ </div>
+
+ <div class="gapS"></div>
+ <div class="sec"><span class="n">4</span>Raccourcis, À propos et confirmations</div>
+ <div class="row">
+  <div class="cell"><div class="frame light" style="width:640px;height:440px">
+   <div class="win" style="left:20px;top:20px;width:600px;height:400px">${sidebar('Raccourcis',176)}
+    <div class="content">${tbar('Raccourcis')}
+     <p style="font-size:12px;color:var(--text2);line-height:1.4;padding:0 2px">Actions disponibles dans Raccourcis, Spotlight et Siri.</p>
+     <div class="grp">
+      <div class="intent"><div class="sq" style="background:#007AFF">${ic('sun',16)}</div><div class="ph">Régler la luminosité du Mi Monitor à <span class="tok">50 %</span></div></div>
+      <div class="intent"><div class="sq" style="background:#5856D6">${ic('layers',15)}</div><div class="ph">Appliquer le profil <span class="tok">Nuit</span></div></div>
+      <div class="intent"><div class="sq" style="background:#34C759">${ic('spk',15)}</div><div class="ph">Régler le volume du Mi Monitor à <span class="tok">20 %</span></div></div>
+      <div class="intent"><div class="sq" style="background:#FF9500">${ic('rects',15)}</div><div class="ph">Changer la source pour <span class="tok">HDMI 1</span></div></div>
+     </div>
+     <div><span class="btn">Ouvrir Raccourcis</span></div>
+    </div></div>
+   </div><div class="cap"><b>Clair · Raccourcis.</b> App Intents avec paramètres modifiables (jetons bleus).</div></div>
+
+  <div class="cell"><div class="frame dark" style="width:560px;height:440px">
+   <div class="win" style="left:20px;top:20px;width:520px;height:400px">${sidebar('À propos',162)}
+    <div class="content" style="gap:12px">${tbar('À propos')}
+     <div style="display:flex;gap:12px;align-items:center;padding:0 2px"><div class="appic">${ic('displaysun',34)}</div><div><div style="font-size:15px;font-weight:700">Mi Monitor</div><div style="font-size:12px;color:var(--text2)">Version 1.0 · DDC/CI</div></div></div>
+     <div class="grp">
+      <div class="kv"><span>Modèle</span><span class="v">Mi Monitor (XMI)</span></div>
+      <div class="kv"><span>Micrologiciel</span><span class="v">V1.0.10</span></div>
+      <div class="kv"><span>MCCS</span><span class="v">2.2a</span></div>
+      <div class="kv"><span>N° de série</span><span class="v">0000000000000</span></div>
+      <div class="kv"><span>Mode</span><span class="v">3840 × 2160 · 60 Hz</span></div>
+      <div class="kv"><span>Connexion</span><span class="v">USB‑C (DP 2)</span></div>
+     </div>
+    </div></div>
+   </div><div class="cap"><b>Sombre · À propos.</b> Données lues sur l’écran (EDID et capacités).</div></div>
+
+  <div class="cell"><div style="display:flex;gap:0;width:456px;height:440px;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.08)">
+    <div class="frame light" style="width:228px;height:440px;border-radius:0;box-shadow:none">
+     <div class="alert" style="left:10px;top:60px;width:208px"><div class="badge acc" style="width:40px;height:40px">${ic('rects',20)}</div><h3>Passer sur HDMI 1 ?</h3><p>Le Mac perdra l’image sur le Mi Monitor. Pour revenir, choisissez USB‑C avec les boutons de l’écran.</p><div class="ab"><span class="btn pri">Changer de source</span><span class="btn">Annuler</span></div></div>
+    </div>
+    <div class="frame dark" style="width:228px;height:440px;border-radius:0;box-shadow:none">
+     <div class="alert" style="left:10px;top:60px;width:208px"><div class="badge gray" style="width:40px;height:40px">${ic('power',20)}</div><h3>Mettre le Mi Monitor en veille ?</h3><p>L’écran s’éteint. Pour le rallumer, utilisez « Réveiller » dans le panneau ou le bouton de l’écran.</p><div class="ab"><span class="btn pri">Mettre en veille</span><span class="btn">Annuler</span></div></div>
+    </div>
+   </div><div class="cap"><b>Confirmations.</b> Changement de source (clair) et mise en veille (sombre).</div></div>
+ </div>
+</div>`;
+document.getElementById('root').innerHTML=H;
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+// Signature et identifiant de l'app : valeurs publiques par défaut.
+// Chacun met les siennes dans Config/Local.xcconfig (non suivi par git), cf. Local.xcconfig.example.
+
+// Identifiant de l'app (Info.plist, App Intents, autorisations Accessibilité).
+APP_BUNDLE_ID = com.example.MiMonitor
+// Équipe de développement Apple (vide = à renseigner dans Local.xcconfig).
+DEVELOPMENT_TEAM =
+
+#include? "Local.xcconfig"

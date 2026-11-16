@@ -1,0 +1,62 @@
+# Projet généré par XcodeGen : `xcodegen generate` recrée XiaomiDisplay.xcodeproj.
+name: XiaomiDisplay
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "Apple Development"
+packages:
+  DDCKit:
+    path: Packages/DDCKit
+targets:
+  XiaomiDisplay:
+    type: application
+    platform: macOS
+    sources:
+      - path: App/Sources
+      - path: App/Resources
+    dependencies:
+      - package: DDCKit
+        product: DDCKit
+    settings:
+      base:
+        PRODUCT_NAME: "Mi Monitor"
+        PRODUCT_BUNDLE_IDENTIFIER: "$(APP_BUNDLE_ID)"
+        PRODUCT_MODULE_NAME: XiaomiDisplay
+        INFOPLIST_FILE: App/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/Resources/XiaomiDisplay.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        SWIFT_APPROACHABLE_CONCURRENCY: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: NO
+  XiaomiDisplayTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [App/Tests]
+    dependencies:
+      - target: XiaomiDisplay
+    settings:
+      base:
+        SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+        GENERATE_INFOPLIST_FILE: YES
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Mi Monitor.app/Contents/MacOS/Mi Monitor"
+schemes:
+  XiaomiDisplay:
+    build:
+      targets:
+        XiaomiDisplay: all
+    test:
+      targets: [XiaomiDisplayTests]

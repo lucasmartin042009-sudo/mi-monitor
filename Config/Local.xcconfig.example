@@ -1,0 +1,12 @@
+// Copier ce fichier en Config/Local.xcconfig puis renseigner tes valeurs.
+// Local.xcconfig est ignoré par git : il ne sera jamais publié.
+
+// Identifiant unique de ton app (format DNS inversé).
+APP_BUNDLE_ID = com.tonnom.MiMonitor
+
+// Ton Team ID Apple (Xcode › Réglages › Comptes, ou : security find-certificate -c "Apple Development" -p | openssl x509 -noout -subject).
+DEVELOPMENT_TEAM = ABCDE12345
+
+// Sans compte développeur : signature locale ad hoc (décommenter). Les actions Raccourcis et
+// l'autorisation Accessibilité peuvent alors devoir être redonnées à chaque compilation.
+// CODE_SIGN_IDENTITY = -

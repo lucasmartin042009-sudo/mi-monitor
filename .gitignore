@@ -1,0 +1,12 @@
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.DS_Store
+docs/maquette/pistes/*.png
+XiaomiDisplay.xcodeproj/
+build/
+.claude/
+docs/maquette/maquette.png
+Config/Local.xcconfig
