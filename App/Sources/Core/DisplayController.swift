@@ -220,6 +220,10 @@ final class DisplayController: Identifiable {
         access = worker
         accessGeneration += 1
         guard connection != .asleep else { return }
+        // Écran retrouvé après avoir été déclaré débranché : on repasse en « Connexion… » AVANT de relire.
+        // Sinon refresh() jette chaque résultat (isStillCurrent refuse l'état .disconnected) et l'écran
+        // ne pouvait jamais revenir, même après « Réessayer » ou un rebranchement (bug du 16 nov.).
+        if connection == .disconnected { connection = .connecting }
         await refresh()
     }
 

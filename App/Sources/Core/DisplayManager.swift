@@ -8,6 +8,36 @@ import AppKit
 import CoreGraphics
 import DDCKit
 import Observation
+import os
+
+/// Écran externe en ligne selon CoreGraphics (indépendant du DDC).
+nonisolated struct OnlineDisplay: Sendable, Equatable {
+    var displayID: CGDirectDisplayID
+    var vendorID: UInt32
+    var productID: UInt32
+
+    /// Vrai si cet écran correspond à l'identité EDID d'un contrôleur.
+    func matches(_ identity: DisplayIdentity) -> Bool {
+        identity.vendorID == vendorID && identity.productID == productID
+    }
+
+    /// Écrans externes en ligne d'après CoreGraphics.
+    static func current() -> [OnlineDisplay] {
+        var count: UInt32 = 0
+        CGGetOnlineDisplayList(0, nil, &count)
+        var ids = [CGDirectDisplayID](repeating: 0, count: Int(count))
+        CGGetOnlineDisplayList(count, &ids, &count)
+        return ids.prefix(Int(count)).filter { CGDisplayIsBuiltin($0) == 0 }.map {
+            OnlineDisplay(displayID: $0, vendorID: CGDisplayVendorNumber($0), productID: CGDisplayModelNumber($0))
+        }
+    }
+}
+
+/// Accès au système remplaçable sous les tests : découverte DDC (IOKit) et écrans en ligne (CoreGraphics).
+nonisolated struct DisplaySystem: Sendable {
+    var discover: @Sendable () -> [ExternalDisplay] = { DisplayDiscovery.externalDisplays() }
+    var onlineExternals: @Sendable () -> [OnlineDisplay] = { OnlineDisplay.current() }
+}
 
 @Observable
 final class DisplayManager {
@@ -41,9 +71,33 @@ final class DisplayManager {
     private var rescanTask: Task<Void, Never>?
     private var observers: [NSObjectProtocol] = []
 
-    /// - Parameter observeSystem: faux sous les tests (pas d'abonnement aux notifications du système).
-    init(defaults: UserDefaults = .standard, observeSystem: Bool = true) {
+    // MARK: Nouvelles tentatives
+    //
+    // Cause du bug du 16 nov. : au démarrage de session, macOS reconfigure les écrans et le service DDC
+    // (DCPAVServiceProxy) du Mi Monitor peut manquer un instant. Un seul balayage tombé dans ce trou
+    // le marquait « Débranché », et plus rien ne relançait la détection : l'écran restait perdu des heures.
+    // Désormais : un écran que CoreGraphics voit encore en ligne n'est déclaré débranché qu'après plusieurs
+    // balayages manqués, et tant qu'un écran en ligne n'est pas joignable, on rebalaye avec un délai croissant.
+
+    @ObservationIgnored private let system: DisplaySystem
+    /// Balayages consécutifs où un écran connu, encore en ligne, n'a pas été trouvé par la détection DDC.
+    @ObservationIgnored private var missedScans: [String: Int] = [:]
+    /// Rang dans `retryDelays` de la prochaine tentative automatique.
+    @ObservationIgnored private var retryStep = 0
+    @ObservationIgnored private var retryTask: Task<Void, Never>?
+    /// Délais des tentatives automatiques ; le dernier se répète tant que le problème dure.
+    @ObservationIgnored var retryDelays: [Duration] = [.seconds(2), .seconds(5), .seconds(10), .seconds(30), .seconds(60)]
+    /// Nombre de balayages manqués avant de déclarer « Débranché » un écran que macOS voit encore.
+    static let missedScansBeforeDisconnect = 3
+
+    private let log = Logger(subsystem: "MiMonitor", category: "detection")
+
+    /// - Parameters:
+    ///   - observeSystem: faux sous les tests (pas d'abonnement aux notifications du système).
+    ///   - system: découverte DDC et écrans en ligne (remplacés sous les tests).
+    init(defaults: UserDefaults = .standard, observeSystem: Bool = true, system: DisplaySystem = DisplaySystem()) {
         self.defaults = defaults
+        self.system = system
         self.selectedID = defaults.string(forKey: Self.selectedKey)
         self.order = defaults.stringArray(forKey: Self.orderKey) ?? []
         guard observeSystem else { return }
@@ -161,13 +215,17 @@ final class DisplayManager {
 
     private func rescan() async {
         // La découverte touche au registre IOKit : rapide, mais faite hors du fil principal.
-        let found = await Task.detached(priority: .userInitiated) { DisplayDiscovery.externalDisplays() }.value
+        let system = self.system
+        let found = await Task.detached(priority: .userInitiated) { system.discover() }.value
+        let online = system.onlineExternals()
+        log.info("Balayage : \(found.count, privacy: .public) écran(s) DDC, \(online.count, privacy: .public) écran(s) externe(s) en ligne")
         var seen = Set<String>()
         for display in found {
             // Un balayage plus récent est programmé : il fera ce travail avec des données plus fraîches.
             guard !Task.isCancelled else { return }
             let id = DisplayController.stableID(of: display)
             seen.insert(id)
+            missedScans[id] = nil
             if let existing = controller(id: id) {
                 await existing.reattach(to: display)
             } else {
@@ -181,9 +239,54 @@ final class DisplayManager {
         // L'écran simulé n'est jamais vu par la détection : il reste tel quel.
         for c in displays where !seen.contains(c.id) && !c.isSimulated
             && c.connection != .disconnected && c.connection != .asleep {
+            let stillOnline = online.contains { $0.matches(c.identity) }
+            let missed = (missedScans[c.id] ?? 0) + 1
+            missedScans[c.id] = missed
+            if stillOnline && missed < Self.missedScansBeforeDisconnect {
+                // macOS voit toujours l'écran : service DDC momentanément absent, on retentera.
+                log.notice("\(c.displayName, privacy: .public) absent de la détection DDC mais en ligne (\(missed, privacy: .public)/\(Self.missedScansBeforeDisconnect, privacy: .public))")
+                continue
+            }
+            log.notice("\(c.displayName, privacy: .public) marqué débranché (en ligne : \(stillOnline, privacy: .public))")
             c.markDisconnected()
         }
         hasScanned = true
         onScanned?()
+        scheduleRetryIfNeeded(found: seen, online: online)
+    }
+
+    /// Vrai si un écran en ligne n'est pas joignable : à rebalayer plus tard.
+    private func needsRetry(found: Set<String>, online: [OnlineDisplay]) -> Bool {
+        // Un écran externe en ligne qu'aucun contrôleur utilisable ne pilote.
+        let unmatched = online.contains { o in
+            !displays.contains { !$0.isSimulated && $0.connection.isUsable && o.matches($0.identity) }
+        }
+        // Un écran connu qui ne répond pas, ou absent de la détection alors que macOS le voit.
+        let stuck = displays.contains { c in
+            guard !c.isSimulated, c.connection != .asleep else { return false }
+            let isOnline = online.contains { $0.matches(c.identity) }
+            switch c.connection {
+            case .unresponsive: return true
+            case .disconnected, .connecting: return isOnline
+            default: return isOnline && !found.contains(c.id)
+            }
+        }
+        return unmatched || stuck
+    }
+
+    private func scheduleRetryIfNeeded(found: Set<String>, online: [OnlineDisplay]) {
+        retryTask?.cancel()
+        guard needsRetry(found: found, online: online), !retryDelays.isEmpty else {
+            retryStep = 0
+            return
+        }
+        let delay = retryDelays[min(retryStep, retryDelays.count - 1)]
+        retryStep += 1
+        log.info("Nouvelle détection dans \(String(describing: delay), privacy: .public)")
+        retryTask = Task { [weak self] in
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled else { return }
+            self?.scheduleRescan(after: .zero)
+        }
     }
 }

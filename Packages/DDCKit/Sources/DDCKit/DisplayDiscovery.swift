@@ -67,6 +67,14 @@ public struct ExternalDisplay: Sendable {
     /// Identifiant CoreGraphics de l'écran (nil si non rapproché).
     public let displayID: CGDirectDisplayID?
     public let device: DDCDevice
+
+    /// Public pour les tests de l'app (écrans simulés) ; la détection réelle passe par DisplayDiscovery.
+    public init(identity: DisplayIdentity, displayID: CGDirectDisplayID?, device: DDCDevice) {
+        self.identity = identity
+        self.displayID = displayID
+        self.device = device
+    }
+
     /// Nom lisible : celui de l'EDID, sinon celui de macOS.
     public var name: String { identity.productName ?? "Écran \(displayID.map(String.init) ?? "?")" }
 }
