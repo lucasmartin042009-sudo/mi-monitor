@@ -29,6 +29,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppModel.shared.start()
     }
+
+    /// En quittant pendant le mode noir : rétablit la luminosité d'avant.
+    func applicationWillTerminate(_ notification: Notification) {
+        AppModel.shared.blackout.disableAll()
+    }
 }
 
 /// Icône de la barre des menus : écran ; triangle d'alerte seulement si l'écran ne répond pas

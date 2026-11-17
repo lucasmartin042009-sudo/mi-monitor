@@ -44,6 +44,7 @@ struct SettingsRowsModule: View {
 
                 if showsFollow {
                     FollowMacBookRow(display: display, showsTopSeparator: showsColor || showsSource)
+                    BlackoutRow(display: display)
                 }
             }
             .padding(.vertical, 3)
@@ -444,5 +445,44 @@ private struct FollowMacBookRow: View {
                     .padding(.leading, 50).padding(.trailing, 12)
             }
         }
+    }
+}
+
+/// « Mode noir » : écran noir sans l'éteindre (charge USB-C et DDC préservés), cf. BlackoutController.
+private struct BlackoutRow: View {
+    @Environment(AppModel.self) private var model
+    let display: DisplayController
+
+    var body: some View {
+        let isOn = model.blackout.isActive(display)
+        HStack(spacing: 10) {
+            IconBadge(symbol: isOn ? "moon.fill" : "moon",
+                      background: isOn ? .black : nil,
+                      foreground: isOn ? .white : .primary,
+                      size: 28)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Mode noir")
+                    .font(.system(size: 13, weight: .semibold))
+                Text(isOn ? "Cliquez sur l'écran noir pour rallumer" : "Écran noir, charge maintenue · \(HotKeyCenter.blackoutCombo.display)")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 6)
+            Toggle("Mode noir", isOn: Binding(
+                get: { model.blackout.isActive(display) },
+                set: { _ in model.blackout.toggle(display) }))
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .labelsHidden()
+                .disabled(!display.connection.isUsable && !isOn)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 7)
+        .frame(minHeight: 46)
+        .overlay(alignment: .top) {
+            Divider().padding(.leading, 50).padding(.trailing, 12)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("Rend l'écran entièrement noir sans l'éteindre ; \(HotKeyCenter.blackoutCombo.display) pour basculer")
     }
 }

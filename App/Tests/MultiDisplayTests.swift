@@ -53,6 +53,22 @@ actor CapsDDC: DDCAccess {
         return (c, fake)
     }
 
+    // MARK: Veille bloquée
+
+    /// Essai réel du 17 nov. : la veille DDC du Mi Monitor coupe la charge USB-C du Mac.
+    /// Elle ne doit être ni proposée ni envoyée, même si l'écran annonce 0xD6.
+    @Test func miMonitorStandbyIsBlocked() async {
+        let (mi, fake) = await make(id: "mi", name: "Mi Monitor", manufacturer: "XMI",
+                                    caps: "(vcp(10 12 14(04 05 08 0B) 60(11 12 0F 10) 62 D6(01 05)))")
+        #expect(!mi.supportedControls.contains(.power))
+        #expect(mi.supportedControls.contains(.brightness))
+        #expect(await mi.setPower(on: false) == false)
+        #expect(await fake.writeCount(0xD6) == 0)
+        // Un autre écran qui annonce 0xD6 garde la veille.
+        let (other, _) = await make(id: "aoc", name: "AOC", manufacturer: "AOC", caps: "(vcp(10 D6(01 05)))")
+        #expect(other.supportedControls.contains(.power))
+    }
+
     // MARK: Capacités
 
     @Test func capabilitiesDriveSupportedControls() async {
@@ -92,7 +108,8 @@ actor CapsDDC: DDCAccess {
                                  caps: FakeDDC.miMonitorCaps,
                                  values: Self.standardValues.merging([0x60: 0x10]) { $1 })
         #expect(mi.quirks.isKnown && mi.quirks.name == "Mi Monitor")
-        #expect(mi.supportedControls == Set(Control.allCases))
+        // Tout sauf la veille 0xD6, bloquée depuis l'essai du 17 nov. (coupe la charge USB-C du Mac).
+        #expect(mi.supportedControls == Set(Control.allCases).subtracting([.power]))
         #expect(mi.availablePresets == [.warm5000K, .neutral6500K, .cool9300K, .user])
         #expect(mi.availableInputs == [.hdmi1, .hdmi2, .displayPort1, .displayPort2])
         #expect(mi.macInput == .displayPort2 && mi.isMacInput(mi.input))
@@ -107,9 +124,9 @@ actor CapsDDC: DDCAccess {
         let t = DisplayQuirks.timing(for: DisplayIdentity(productName: "Mi Monitor", manufacturer: "XMI"))
         #expect(t.writeCycles == 2 && t.attempts == DDCTiming().attempts)
         #expect(t.quietAfterWrite == [0x62: 0.9, 0x16: 0.9, 0x18: 0.9, 0x1A: 0.9, 0x14: 0.6, 0x60: 2.0])
-        // Capacités illisibles : la mise en veille reste proposée sur le Mi Monitor (comme avant).
+        // Capacités illisibles : la veille n'est pas proposée non plus sur le Mi Monitor.
         let (noCaps, _) = await make(id: "mi2", name: "Mi Monitor", manufacturer: "XMI", caps: nil)
-        #expect(noCaps.supportedControls.contains(.power))
+        #expect(!noCaps.supportedControls.contains(.power))
         let (unknown, _) = await make(id: "u2", caps: nil)
         #expect(!unknown.supportedControls.contains(.power))
     }

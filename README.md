@@ -18,6 +18,8 @@ donc pas distribuable sur l'App Store.
 - **Touches du clavier** : luminosité et son agissent sur l'écran externe quand le pointeur s'y trouve, avec un OSD en
   capsule de verre facultatif (« Aucun » par défaut : avec Canopy, l'encoche l'affiche déjà). Nécessite l'autorisation
   Accessibilité.
+- **Mode noir** (⌃⌥⌘N ou bouton du panneau) : écran entièrement noir et rétroéclairage au minimum, **sans
+  éteindre l'écran** — la charge USB-C du Mac et le DDC continuent. Un clic sur l'écran noir le rallume.
 - **Profils** enregistrables (globaux ou liés à un écran), avec raccourci clavier global facultatif.
 - **Synchronisation** de la luminosité avec l'écran du MacBook, écran par écran (avec écart réglable).
 - **Raccourcis (App Intents)** : « Régler la luminosité », « Obtenir la luminosité » (écran au choix), « Appliquer un profil ».
@@ -32,7 +34,8 @@ la conception multi-écran est dans [docs/multi-ecran.md](docs/multi-ecran.md).
 Curseurs luminosité / contraste / son, profils, sourdine simulée, confirmation de changement de source, touches de
 luminosité du clavier (pointeur sur l'écran externe ou sur le MacBook), synchro avec le MacBook (pause après réglage
 manuel, reprise), raccourcis clavier des profils, actions Raccourcis, inscription à l'ouverture de session.
-Non testé en vrai : veille / réveil de l'écran par DDC (0xD6), second écran réel.
+Testé aussi : mode noir (charge maintenue à 65 W). Veille DDC (0xD6) testée et **bloquée** pour le Mi Monitor :
+elle coupe la charge USB-C du Mac et l'écran ne se réveille plus qu'avec son bouton. Non testé : second écran réel.
 
 ## Prérequis
 

@@ -136,6 +136,11 @@ final class DisplayController: Identifiable {
     /// est connu pour accepter sans relecture (Mi Monitor : alimentation, comme avant le multi-écran).
     /// L'alimentation (0xD6) n'est jamais relue : elle compte dès qu'elle est annoncée.
     var supportedControls: Set<Control> {
+        announcedControls.subtracting(quirks.blockedControls)
+    }
+
+    /// Réglages annoncés et lisibles, avant le retrait des réglages bloqués par le modèle.
+    private var announcedControls: Set<Control> {
         guard let vcp = capabilities?.vcp, !vcp.isEmpty else {
             return hasReadValues ? readableControls.union(quirks.unreadControls) : readableControls
         }
@@ -441,6 +446,8 @@ final class DisplayController: Identifiable {
     @discardableResult
     func setPower(on: Bool) async -> Bool {
         guard let access else { return false }
+        // Veille bloquée pour ce modèle (Mi Monitor : coupe la charge USB-C du Mac, cf. DisplayQuirks).
+        if !on && quirks.blockedControls.contains(.power) { return false }
         do {
             try await access.write(Control.power.code, value: on ? 0x01 : 0x05)
             if on {

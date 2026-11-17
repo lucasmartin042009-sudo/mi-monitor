@@ -38,6 +38,8 @@ nonisolated enum DisplayQuirks {
         /// Réglages jamais relus mais connus du modèle (alimentation 0xD6) : comptés dans
         /// supportedControls même si la chaîne de capacités n'a pas pu être lue.
         var unreadControls: Set<Control> = []
+        /// Réglages annoncés par l'écran mais dangereux à utiliser : jamais proposés dans l'interface.
+        var blockedControls: Set<Control> = []
     }
 
     /// Réglages lents d'un écran inconnu : son et gains, par prudence (comme le Mi Monitor).
@@ -55,6 +57,8 @@ nonisolated enum DisplayQuirks {
     ///  • après un changement de préréglage couleur : 200–500 ms de silence
     ///    (une luminosité envoyée 200 ms après est perdue, à 500 ms elle passe) ;
     ///  • changement de source : l'écran resynchronise l'image, on lui laisse 2 s.
+    ///  • veille 0xD6 = 05 (essai du 17 nov.) : l'écran coupe l'image, la CHARGE USB-C du Mac (65 W → batterie
+    ///    en 2 s) et le DDC ; il disparaît de macOS et ne se réveille qu'avec son bouton → 0xD6 bloqué.
     static let miMonitor: Profile = {
         var t = DDCTiming()
         t.quietAfterWrite = prudentQuiet
@@ -65,7 +69,7 @@ nonisolated enum DisplayQuirks {
             presetTitles: [.user: "Utilisateur"],
             defaultPresets: [.warm5000K, .neutral6500K, .cool9300K, .user],
             defaultInputs: [.hdmi1, .hdmi2, .displayPort1, .displayPort2],
-            macInput: .displayPort2, unreadControls: [.power])
+            macInput: .displayPort2, unreadControls: [], blockedControls: [.power])
     }()
 
     /// Écran jamais mesuré : silences et réglages lents prudents, rien d'autre de supposé.

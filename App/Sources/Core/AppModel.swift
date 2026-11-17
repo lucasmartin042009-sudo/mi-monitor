@@ -15,6 +15,8 @@ final class AppModel {
     @ObservationIgnored private(set) lazy var mediaKeys = MediaKeyMonitor(model: self)
     @ObservationIgnored private(set) lazy var hotKeys = HotKeyCenter(model: self)
     @ObservationIgnored private(set) lazy var brightnessSync = BrightnessSync(model: self)
+    /// « Mode noir » : écran noir sans l'éteindre (la veille DDC coupe la charge USB-C du Mac).
+    @ObservationIgnored private(set) lazy var blackout = BlackoutController(model: self)
 
     private var started = false
 

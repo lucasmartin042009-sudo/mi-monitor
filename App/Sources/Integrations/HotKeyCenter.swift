@@ -28,6 +28,12 @@ final class HotKeyCenter {
 
     /// Signature 'MiMo' des raccourcis de l'app.
     static let signature: OSType = 0x4D69_4D6F
+    /// Identifiant réservé du raccourci « Mode noir » (les profils commencent à 1).
+    static let blackoutID: UInt32 = 0xB1AC
+    /// Raccourci du mode noir : ⌃⌥⌘N (N comme « noir »).
+    static let blackoutCombo = KeyCombo(keyCode: UInt32(kVK_ANSI_N),
+                                        carbonModifiers: UInt32(controlKey | optionKey | cmdKey), display: "⌃⌥⌘N")
+    @ObservationIgnored private var blackoutRef: EventHotKeyRef?
 
     init(model: AppModel) { self.model = model }
 
@@ -56,6 +62,8 @@ final class HotKeyCenter {
         // Pendant l'enregistrement d'un raccourci, rien n'est enregistré : la combinaison tapée
         // doit arriver à l'enregistreur, pas appliquer le profil qui l'utilise déjà.
         guard !isSuspended else { return }
+
+        registerBlackoutShortcut()
 
         var failed = Set<UUID>()
         defer { if failed != failedProfileIDs { failedProfileIDs = failed } }
@@ -92,7 +100,18 @@ final class HotKeyCenter {
         reload()
     }
 
+    private func registerBlackoutShortcut() {
+        var ref: EventHotKeyRef?
+        let combo = Self.blackoutCombo
+        let status = RegisterEventHotKey(combo.keyCode, combo.carbonModifiers,
+                                         EventHotKeyID(signature: Self.signature, id: Self.blackoutID),
+                                         GetApplicationEventTarget(), 0, &ref)
+        if status == noErr { blackoutRef = ref } else { NSLog("Mi Monitor : raccourci \(combo.display) du mode noir refusé (\(status))") }
+    }
+
     private func unregisterAll() {
+        if let blackoutRef { UnregisterEventHotKey(blackoutRef) }
+        blackoutRef = nil
         refs.forEach { UnregisterEventHotKey($0) }
         refs.removeAll()
         bindings.removeAll()
@@ -108,6 +127,10 @@ final class HotKeyCenter {
 
     /// Raccourci pressé : applique le profil puis montre l'OSD luminosité. Vrai si traité.
     fileprivate func fire(signature: OSType, id: UInt32) -> Bool {
+        if signature == Self.signature && id == Self.blackoutID {
+            model.blackout.toggleForShortcut()
+            return true
+        }
         guard signature == Self.signature, let profileID = bindings[id],
               let profile = model.profiles.profile(id: profileID) else { return false }
         // Écran du profil s'il est connecté, sinon l'écran sélectionné.
